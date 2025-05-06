@@ -10,7 +10,7 @@ if not exist "%MINGW_PATH%\gcc.exe" (
     exit /b 1
 )
 echo Compiling main.c...
-gcc main.c -o bot.exe -lws2_32
+gcc main.c -o bot.exe -lws2_32 -lgdi32
 if errorlevel 1 (
     echo Compilation failed.
     pause

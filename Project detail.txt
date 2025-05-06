@@ -20,6 +20,6 @@ Please contact me privately for more details.
 9.It should operate from a network perspective, making the malware spread through lateral movement or targeting the Active Directory.
 10.It should hide itself when clicked.
 11.It should be capable of controlling more than one device, for example, 100,000 devices.
-12.It cannot be deleted from the device, even through Task Manager
+12.It cannot be deleted from the device, even through Task Manager.
 13.It stores itself in the kernel.
 14.Do not run as administrator

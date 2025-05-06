@@ -7,6 +7,21 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <ListBox Name="BotsList" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="16"/>
+        <StackPanel Grid.Column="1" Orientation="Vertical">
+            <ListBox Name="MessagesList" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="16" Height="300"/>
+            <Image Name="ScreenImage" Height="120" Stretch="Uniform" Margin="0,10,0,0"/>
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <ComboBox Name="CommandComboBox" Width="200" Height="30" Margin="0,0,10,0">
+                    <ComboBoxItem Content="TURN OFF"/>
+                    <!-- Add more commands here if needed -->
+                </ComboBox>
+                <Button Name="SendCommandButton" Content="Send Command" Width="120" Height="30"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>
