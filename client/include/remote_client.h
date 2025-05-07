@@ -7,6 +7,15 @@
 #include <string.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>  // For inet_pton
+#include <time.h>      // For time functions in logging
+
+// Define log levels
+typedef enum {
+    LOG_DEBUG = 0,
+    LOG_INFO,
+    LOG_WARNING,
+    LOG_ERROR
+} LogLevel;
 
 // Error handling
 typedef enum {
@@ -20,11 +29,18 @@ typedef enum {
 typedef struct {
     const char* server_address;
     unsigned short server_port;
+    const char* log_file;      // Path to log file
+    LogLevel log_level;        // Minimum log level to record
 } ClientConfig;
 
 // Function declarations
 RemoteClientError initialize_client(const ClientConfig* config);
 RemoteClientError cleanup_client(void);
+
+// Logging functions
+void log_message(LogLevel level, const char* format, ...);
+void log_init(const char* log_file, LogLevel min_level);
+void log_close(void);
 
 // Network operations
 RemoteClientError connect_to_server(void);

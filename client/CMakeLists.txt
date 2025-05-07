@@ -1,23 +1,26 @@
 cmake_minimum_required(VERSION 3.10)
 project(RemoteClient C)
 
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD 99)
 
-# Add source files
-add_executable(remote_client 
+# Add include directory
+include_directories(include)
+
+# Set source files
+set(SOURCE_FILES
     src/main.c
     src/network.c
+    src/logger.c
 )
 
-# Include directories
-target_include_directories(remote_client PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
+# Create executable
+add_executable(RemoteClient ${SOURCE_FILES})
 
-# Windows-specific libraries
-if(WIN32)
-    target_link_libraries(remote_client PRIVATE 
-        ws2_32  # Windows Sockets
-    )
-endif()
+# Link Windows Socket library
+target_link_libraries(RemoteClient wsock32 ws2_32)
+
+# Ensure logs directory is created during build
+add_custom_command(TARGET RemoteClient POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/logs
+    COMMENT "Creating logs directory"
+)

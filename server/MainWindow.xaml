@@ -60,7 +60,9 @@
                     <Button DockPanel.Dock="Right" Content="Send" 
                             Command="{Binding SendCommandCommand}"
                             Width="80" Margin="5,0,0,0"/>
-                    <TextBox Text="{Binding CommandText, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ComboBox ItemsSource="{Binding Commands}" 
+                              SelectedItem="{Binding SelectedCommand}" 
+                              Width="200"/>
                 </DockPanel>
                 <TextBox AcceptsReturn="True" IsReadOnly="True" 
                          Text="{Binding ServerStatus, Mode=OneWay}"/>

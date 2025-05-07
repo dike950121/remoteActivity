@@ -7,6 +7,7 @@ static volatile BOOL running = TRUE;
 
 BOOL WINAPI console_handler(DWORD ctrl_type) {
     if (ctrl_type == CTRL_C_EVENT || ctrl_type == CTRL_CLOSE_EVENT) {
+        log_message(LOG_INFO, "Shutdown signal received, exiting...");
         running = FALSE;
         return TRUE;
     }
@@ -18,57 +19,79 @@ int main(int argc, char* argv[]) {
     UNUSED(argc);
     UNUSED(argv);
 
+    // Initialize logging system
+    log_init(NULL, LOG_DEBUG);
+    log_message(LOG_INFO, "Remote client starting up");
+
     // Set up console handler for graceful shutdown
     SetConsoleCtrlHandler(console_handler, TRUE);
+    log_message(LOG_DEBUG, "Console control handler registered");
 
     // Default configuration
     ClientConfig config = {
         .server_address = "127.0.0.1",
-        .server_port = 8443
+        .server_port = 8443,
+        .log_file = NULL,      // We've already initialized the logger
+        .log_level = LOG_DEBUG // Default log level
     };
 
+    log_message(LOG_INFO, "Client configuration: server=%s, port=%d", 
+                config.server_address, config.server_port);
+
     // Initialize the client
+    log_message(LOG_DEBUG, "Initializing client...");
     RemoteClientError result = initialize_client(&config);
     if (result != RC_SUCCESS) {
-        fprintf(stderr, "Failed to initialize client: WSA initialization error\n");
+        log_message(LOG_ERROR, "Failed to initialize client: WSA initialization error");
+        log_close();
         return 1;
     }
 
     // Connect to server
-    printf("Attempting to connect to server at %s:%d...\n", config.server_address, config.server_port);
+    log_message(LOG_INFO, "Attempting to connect to server at %s:%d...", 
+                config.server_address, config.server_port);
     result = connect_to_server();
     if (result != RC_SUCCESS) {
-        fprintf(stderr, "Failed to connect to server at %s:%d\n", config.server_address, config.server_port);
-        fprintf(stderr, "Make sure the server is running and the address/port are correct\n");
+        log_message(LOG_ERROR, "Failed to connect to server at %s:%d", 
+                    config.server_address, config.server_port);
+        log_message(LOG_ERROR, "Make sure the server is running and the address/port are correct");
         cleanup_client();
+        log_close();
         return 1;
     }
 
-    printf("Connected to server at %s:%d\n", config.server_address, config.server_port);
+    log_message(LOG_INFO, "Connected to server at %s:%d", 
+                config.server_address, config.server_port);
 
     // Main message processing loop
     Message message;
     while (running) {
         // Wait for and process messages
+        log_message(LOG_DEBUG, "Waiting for server messages...");
         result = receive_message(&message);
         if (result != RC_SUCCESS) {
             if (running) {
-                fprintf(stderr, "Error receiving message\n");
+                log_message(LOG_ERROR, "Error receiving message");
                 break;
             }
             // If not running, this was a clean shutdown
+            log_message(LOG_INFO, "Message loop terminated by shutdown signal");
             break;
         }
 
+        log_message(LOG_DEBUG, "Received message type %d with %zu bytes", 
+                    message.type, message.data_length);
         result = process_message(&message);
         if (result != RC_SUCCESS) {
-            fprintf(stderr, "Error processing message\n");
+            log_message(LOG_ERROR, "Error processing message");
             break;
         }
     }
 
-    printf("Disconnecting from server...\n");
+    log_message(LOG_INFO, "Disconnecting from server...");
     disconnect_from_server();
     cleanup_client();
+    log_message(LOG_INFO, "Client shutdown complete");
+    log_close();
     return 0;
 }

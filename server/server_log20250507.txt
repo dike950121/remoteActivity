@@ -1,2 +1,33 @@
 2025-05-07 16:17:10.612 -04:00 [INF] Server started on port 8443
 2025-05-07 16:17:16.663 -04:00 [INF] Client connected: e3287265-ad8f-41b1-b78b-ca8851ffb24a from 127.0.0.1
+2025-05-07 17:06:48.863 -04:00 [INF] Server started on port 8443
+2025-05-07 17:06:50.655 -04:00 [INF] Client connected: 207a4d0a-92bf-4790-a189-b23206cd181d from 127.0.0.1
+2025-05-07 17:11:46.797 -04:00 [INF] Server started on port 8443
+2025-05-07 17:11:53.039 -04:00 [INF] Client connected: 28a74087-48f6-45ea-b0d2-71479cfb07eb from 127.0.0.1
+2025-05-07 17:12:30.997 -04:00 [INF] Server started on port 8443
+2025-05-07 17:12:34.514 -04:00 [INF] Client connected: a71a5b17-c527-47ae-bdaf-21c76a92a79e from 127.0.0.1
+2025-05-07 17:19:23.373 -04:00 [INF] Server started on port 8443
+2025-05-07 17:19:27.248 -04:00 [INF] Client connected: fae9ebe0-472d-45f7-a8e4-8ab78fb8e45c from 127.0.0.1
+2025-05-07 17:27:38.220 -04:00 [INF] Server started on port 8443
+2025-05-07 17:27:41.269 -04:00 [INF] Client connected: 1aeb2e96-35e4-478e-9098-796d0889dca9 from 127.0.0.1
+2025-05-07 17:30:07.691 -04:00 [INF] Server started on port 8443
+2025-05-07 17:30:10.837 -04:00 [INF] Client connected: e2dcbae4-304c-4ef1-97a8-73f5caf08e3a from 127.0.0.1
+2025-05-07 17:33:04.828 -04:00 [INF] Server started on port 8443
+2025-05-07 17:33:07.531 -04:00 [INF] Client connected: d23f97dc-13aa-42ea-a0d5-10a6f0ae2947 from 127.0.0.1
+2025-05-07 17:35:17.275 -04:00 [INF] Server started on port 8443
+2025-05-07 17:35:20.203 -04:00 [INF] Client connected: 045b431b-20cb-4e5b-94e8-94a46b9d426a from 127.0.0.1
+2025-05-07 17:35:43.360 -04:00 [INF] Client disconnected: 045b431b-20cb-4e5b-94e8-94a46b9d426a
+2025-05-07 17:35:43.382 -04:00 [ERR] Error receiving message from client 045b431b-20cb-4e5b-94e8-94a46b9d426a
+System.IO.IOException: Unable to read data from the transport connection: The I/O operation has been aborted because of either a thread exit or an application request..
+ ---> System.Net.Sockets.SocketException (995): The I/O operation has been aborted because of either a thread exit or an application request.
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at RemoteServer.Services.NetworkService.ReadFullyAsync(NetworkStream stream, Byte[] buffer) in E:\github\remoteActivity\server\Services\NetworkService.cs:line 144
+   at RemoteServer.Services.NetworkService.ReceiveMessageAsync(ConnectedClient client) in E:\github\remoteActivity\server\Services\NetworkService.cs:line 91
+2025-05-07 17:37:53.490 -04:00 [INF] Server started on port 8443
+2025-05-07 17:37:57.095 -04:00 [INF] Client connected: dbc3acee-7278-46fa-9ca3-df01d659e1f3 from 127.0.0.1
+2025-05-07 17:40:46.747 -04:00 [INF] Server started on port 8443
+2025-05-07 17:40:49.542 -04:00 [INF] Client connected: c2d8e7a9-c5fd-4c3b-b9a6-29f4741e95e6 from 127.0.0.1
+2025-05-07 17:42:54.801 -04:00 [INF] Server started on port 8443
+2025-05-07 17:42:58.404 -04:00 [INF] Client connected: c8dcdd3d-c6f1-48c7-ac7b-6c1c5ebdea87 from 127.0.0.1

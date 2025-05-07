@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -23,10 +24,15 @@ namespace RemoteServer.ViewModels
         [ObservableProperty]
         private string? _selectedClientId;
 
-        [ObservableProperty]
-        private string _commandText = string.Empty;
-
         public ObservableCollection<ConnectedClient> ConnectedClients { get; } = new();
+
+        public ObservableCollection<string> Commands { get; } = new ObservableCollection<string>
+        {
+            "screen sharing"
+        };
+
+        [ObservableProperty]
+        private string? _selectedCommand;
 
         public MainWindowViewModel(NetworkService networkService)
         {
@@ -57,17 +63,26 @@ namespace RemoteServer.ViewModels
         [RelayCommand]
         private async Task SendCommandAsync()
         {
-            if (string.IsNullOrEmpty(SelectedClientId) || string.IsNullOrEmpty(CommandText))
+            if (string.IsNullOrEmpty(SelectedClientId) || string.IsNullOrEmpty(SelectedCommand))
                 return;
+
+            if (SelectedCommand == "screen sharing")
+            {
+                // Open the screen sharing dialog
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    var screenSharingWindow = new ScreenSharingWindow();
+                    screenSharingWindow.Show();
+                });
+            }
 
             var message = new Message
             {
                 Type = MessageType.Command,
-                Data = Encoding.UTF8.GetBytes(CommandText)
+                Data = Encoding.UTF8.GetBytes(SelectedCommand)
             };
 
             await _networkService.SendMessageAsync(SelectedClientId, message);
-            CommandText = string.Empty;
         }
 
         [RelayCommand]

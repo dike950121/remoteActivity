@@ -24,6 +24,7 @@ namespace RemoteServer.Services
         public NetworkService(int port = 8443)
         {
             _listener = new TcpListener(IPAddress.Any, port);
+            Log.Debug("NetworkService initialized with port {Port}", port);
         }
 
         public async Task StartAsync()
@@ -38,17 +39,25 @@ namespace RemoteServer.Services
 
                 while (!_cancellationTokenSource.Token.IsCancellationRequested)
                 {
+                    Log.Debug("Waiting for client connections...");
                     var client = await _listener.AcceptTcpClientAsync(_cancellationTokenSource.Token);
+                    var ip = ((IPEndPoint)client.Client.RemoteEndPoint)?.Address.ToString() ?? "unknown";
+                    Log.Information("New connection attempt from {IpAddress}", ip);
                     _ = HandleClientAsync(client);
                 }
             }
             catch (OperationCanceledException)
             {
+                Log.Information("Server shutdown requested");
                 // Normal shutdown
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error in network service");
+                Log.Error(ex, "Critical error in network service");
+            }
+            finally
+            {
+                Log.Information("Server stopped");
             }
         }
 
@@ -64,9 +73,16 @@ namespace RemoteServer.Services
 
                     while (!_cancellationTokenSource.Token.IsCancellationRequested)
                     {
+                        Log.Debug("Waiting for message from client {ClientId}", client.Id);
                         var message = await ReceiveMessageAsync(client);
-                        if (message == null) break;
+                        if (message == null)
+                        {
+                            Log.Information("No message or connection closed for client {ClientId}", client.Id);
+                            break;
+                        }
                         
+                        Log.Debug("Received message type {MessageType} with {DataLength} bytes from client {ClientId}", 
+                            message.Type, message.DataLength, client.Id);
                         MessageReceived?.Invoke(this, (client.Id, message));
                     }
                 }
@@ -79,6 +95,11 @@ namespace RemoteServer.Services
                     DisconnectClient(client.Id);
                 }
             }
+            else
+            {
+                Log.Warning("Failed to add client {ClientId} to client dictionary", client.Id);
+                tcpClient.Close();
+            }
         }
 
         private async Task<Message?> ReceiveMessageAsync(ConnectedClient client)
@@ -88,12 +109,25 @@ namespace RemoteServer.Services
                 var typeBuffer = new byte[sizeof(int)];
                 var lengthBuffer = new byte[sizeof(int)];
 
-                if (!await ReadFullyAsync(client.Stream, typeBuffer) ||
-                    !await ReadFullyAsync(client.Stream, lengthBuffer))
+                Log.Debug("Reading message type from client {ClientId}", client.Id);
+                if (!await ReadFullyAsync(client.Stream, typeBuffer))
+                {
+                    Log.Debug("Failed to read message type from client {ClientId}", client.Id);
                     return null;
+                }
+
+                Log.Debug("Reading message length from client {ClientId}", client.Id);
+                if (!await ReadFullyAsync(client.Stream, lengthBuffer))
+                {
+                    Log.Debug("Failed to read message length from client {ClientId}", client.Id);
+                    return null;
+                }
 
                 var type = (MessageType)BitConverter.ToInt32(typeBuffer);
                 var length = BitConverter.ToInt32(lengthBuffer);
+
+                Log.Debug("Message header parsed: Type={MessageType}, Length={Length} from client {ClientId}", 
+                    type, length, client.Id);
 
                 if (length > Message.MaxMessageSize)
                 {
@@ -101,10 +135,20 @@ namespace RemoteServer.Services
                     return null;
                 }
 
+                if (length < 0)
+                {
+                    Log.Warning("Invalid message length from client {ClientId}: {Length} bytes", client.Id, length);
+                    return null;
+                }
+
                 var data = new byte[length];
                 if (!await ReadFullyAsync(client.Stream, data))
+                {
+                    Log.Debug("Failed to read message data from client {ClientId}", client.Id);
                     return null;
+                }
 
+                Log.Debug("Successfully received complete message from client {ClientId}", client.Id);
                 return new Message { Type = type, Data = data };
             }
             catch (Exception ex)
@@ -117,10 +161,16 @@ namespace RemoteServer.Services
         public async Task SendMessageAsync(string clientId, Message message)
         {
             if (!_clients.TryGetValue(clientId, out var client))
+            {
+                Log.Warning("Attempted to send message to non-existent client {ClientId}", clientId);
                 return;
+            }
 
             try
             {
+                Log.Debug("Sending message type {MessageType} with {DataLength} bytes to client {ClientId}", 
+                    message.Type, message.DataLength, clientId);
+                
                 var typeBytes = BitConverter.GetBytes((int)message.Type);
                 var lengthBytes = BitConverter.GetBytes(message.DataLength);
 
@@ -128,6 +178,8 @@ namespace RemoteServer.Services
                 await client.Stream.WriteAsync(lengthBytes);
                 if (message.DataLength > 0)
                     await client.Stream.WriteAsync(message.Data);
+                
+                Log.Debug("Message sent successfully to client {ClientId}", clientId);
             }
             catch (Exception ex)
             {
@@ -163,24 +215,43 @@ namespace RemoteServer.Services
                     Log.Error(ex, "Error disconnecting client {ClientId}", clientId);
                 }
             }
+            else
+            {
+                Log.Debug("Attempted to disconnect already disconnected client {ClientId}", clientId);
+            }
         }
 
         public void Stop()
         {
             if (!_isRunning) return;
 
+            Log.Information("Stopping network service...");
             _cancellationTokenSource.Cancel();
+            
+            int clientCount = _clients.Count;
+            Log.Information("Closing {ClientCount} active connections", clientCount);
+            
             foreach (var client in _clients.Values)
             {
-                client.TcpClient.Close();
+                try
+                {
+                    client.TcpClient.Close();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error closing client connection {ClientId}", client.Id);
+                }
             }
+            
             _clients.Clear();
             _listener.Stop();
             _isRunning = false;
+            Log.Information("Network service stopped");
         }
 
         public void Dispose()
         {
+            Log.Debug("Disposing NetworkService");
             Stop();
             _cancellationTokenSource.Dispose();
         }
