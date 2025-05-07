@@ -1,0 +1,2 @@
+2025-05-07 16:17:10.612 -04:00 [INF] Server started on port 8443
+2025-05-07 16:17:16.663 -04:00 [INF] Client connected: e3287265-ad8f-41b1-b78b-ca8851ffb24a from 127.0.0.1
