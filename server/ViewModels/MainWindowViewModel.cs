@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -8,12 +7,14 @@ using CommunityToolkit.Mvvm.Input;
 using RemoteServer.Models;
 using RemoteServer.Services;
 using System.Text;
+using Serilog;
 
 namespace RemoteServer.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
         private readonly NetworkService _networkService;
+        private ScreenSharingWindow? _screenSharingWindow;
         
         [ObservableProperty]
         private bool _isServerRunning;
@@ -71,8 +72,9 @@ namespace RemoteServer.ViewModels
                 // Open the screen sharing dialog
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    var screenSharingWindow = new ScreenSharingWindow();
-                    screenSharingWindow.Show();
+                    _screenSharingWindow = new ScreenSharingWindow();
+                    _screenSharingWindow.Closed += (s, e) => _screenSharingWindow = null;
+                    _screenSharingWindow.Show();
                 });
             }
 
@@ -118,11 +120,56 @@ namespace RemoteServer.ViewModels
 
         private void OnMessageReceived(object? sender, (string ClientId, Message Message) args)
         {
-            var text = Encoding.UTF8.GetString(args.Message.Data);
-            App.Current.Dispatcher.Invoke(() =>
+            try
             {
-                ServerStatus = $"Received from {args.ClientId}: {text}";
-            });
+                // Check if this is image data
+                if (_screenSharingWindow != null)
+                {
+                    // Try to parse as text first to check for header
+                    string headerText = Encoding.UTF8.GetString(args.Message.Data, 0, Math.Min(50, args.Message.Data.Length));
+                    
+                    // Check if it's an image header
+                    if (headerText.StartsWith("SCREEN_IMAGE:"))
+                    {
+                        // It's an image header, pass to the screen sharing window
+                        App.Current.Dispatcher.Invoke(() => {
+                            _screenSharingWindow?.ProcessImageHeader(headerText);
+                        });
+                        
+                        ServerStatus = $"Receiving screen image from {args.ClientId}...";
+                        return;
+                    }
+                    
+                    // If we're expecting image data and this doesn't look like text, 
+                    // assume it's binary image data
+                    if (headerText.Any(c => c < 32 && c != '\r' && c != '\n' && c != '\t'))
+                    {
+                        // Likely binary data, pass to screen sharing window
+                        App.Current.Dispatcher.Invoke(() => {
+                            _screenSharingWindow?.ProcessImageData(args.Message.Data, args.Message.Data.Length);
+                        });
+                        
+                        // Don't update status for every chunk
+                        return;
+                    }
+                }
+                
+                // Regular text message
+                var text = Encoding.UTF8.GetString(args.Message.Data);
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    ServerStatus = $"Received from {args.ClientId}: {text}";
+                });
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error processing message from client {ClientId}", args.ClientId);
+                
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    ServerStatus = $"Error processing message from {args.ClientId}: {ex.Message}";
+                });
+            }
         }
     }
 }

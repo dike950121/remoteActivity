@@ -36,21 +36,22 @@ void log_init(const char* log_path, LogLevel min_level) {
     
     char full_path[MAX_PATH];
     time_t now;
-    struct tm timeinfo;
+    struct tm *timeinfo;
     
     time(&now);
-    localtime_s(&timeinfo, &now);
+    timeinfo = localtime(&now); // Use standard localtime instead of localtime_s
     
     if (log_path != NULL) {
         strncpy(full_path, log_path, MAX_PATH - 1);
+        full_path[MAX_PATH - 1] = '\0'; // Ensure null termination
     } else {
         // Create a default log file name with date stamp
         snprintf(full_path, MAX_PATH, "logs/client_log_%04d%02d%02d.txt",
-            timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday);
+            timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday);
     }
     
-    // Open log file in append mode
-    fopen_s(&log_file, full_path, "a");
+    // Open log file in append mode using standard fopen
+    log_file = fopen(full_path, "a");
     
     if (log_file != NULL) {
         is_initialized = 1;
@@ -100,13 +101,13 @@ void log_message(LogLevel level, const char* format, ...) {
     
     if (log_file != NULL) {
         time_t now;
-        struct tm timeinfo;
+        struct tm *timeinfo;
         char time_str[26];
         
         // Get current time
         time(&now);
-        localtime_s(&timeinfo, &now);
-        strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", &timeinfo);
+        timeinfo = localtime(&now); // Use standard localtime instead of localtime_s
+        strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", timeinfo);
         
         // Print timestamp and log level
         fprintf(log_file, "%s [%s] ", time_str, log_level_to_string(level));

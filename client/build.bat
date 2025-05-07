@@ -44,15 +44,15 @@ if exist build\remote_client.exe (
 )
 
 :: Set source and include paths with proper Windows backslashes
-set "SOURCES=src\main.c src\network.c"
+set "SOURCES=src\main.c src\network.c src\logger.c src\screen_capture.c"
 set "INCLUDE_DIR=include"
 set "OUTPUT=build\remote_client.exe"
 
 :: Compile the project with detailed output
 echo [%DATE% %TIME%] Compiling the project with MinGW...
-echo [%DATE% %TIME%] Command: gcc -D_WIN32_WINNT=0x0600 %SOURCES% -I%INCLUDE_DIR% -o %OUTPUT% -Wall -Wextra -lws2_32
+echo [%DATE% %TIME%] Command: gcc -D_WIN32_WINNT=0x0600 %SOURCES% -I%INCLUDE_DIR% -o %OUTPUT% -Wall -Wextra -lws2_32 -lgdi32
 
-gcc -D_WIN32_WINNT=0x0600 %SOURCES% -I%INCLUDE_DIR% -o %OUTPUT% -Wall -Wextra -lws2_32 > build_log.txt 2>&1
+gcc -D_WIN32_WINNT=0x0600 %SOURCES% -I%INCLUDE_DIR% -o %OUTPUT% -Wall -Wextra -lws2_32 -lgdi32 > build_log.txt 2>&1
 
 if %ERRORLEVEL% NEQ 0 (
     echo [%DATE% %TIME%] ERROR: Compilation failed with error code %ERRORLEVEL%

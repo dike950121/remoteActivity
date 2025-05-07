@@ -66,4 +66,7 @@ RemoteClientError receive_message(Message* message);
 RemoteClientError send_message(const Message* message);
 RemoteClientError process_message(const Message* message);
 
+// Screen capture function
+RemoteClientError capture_and_send_screen(void);
+
 #endif // REMOTE_CLIENT_H
