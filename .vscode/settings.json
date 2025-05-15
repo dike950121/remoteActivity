@@ -1,5 +1,7 @@
 {
   "files.associations": {
     "windows.h": "c"
-  }
+  },
+  "localaipilot.general.inlineSuggestions": true,
+  "localaipilot.standalone.ollamaModel": "codegemma:2b"
 }
