@@ -122,14 +122,15 @@ namespace RemoteAccessServer.Models
 
         public ClientInfo()
         {
-            ClientId = Guid.NewGuid().ToString("N")[..8].ToUpper();
-            Status = "Connecting";
+            _clientId = Guid.NewGuid().ToString("N")[..8].ToUpper();
+            _status = "Connecting";
             ConnectedAt = DateTime.Now;
             LastSeen = DateTime.Now;
             _operatingSystem = string.Empty;
             _computerName = string.Empty;
             _userName = string.Empty;
             _version = string.Empty;
+            _ipAddress = string.Empty;
         }
 
         public ClientInfo(string clientId, string ipAddress) : this()
@@ -200,7 +201,7 @@ namespace RemoteAccessServer.Models
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

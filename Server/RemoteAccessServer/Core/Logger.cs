@@ -10,7 +10,7 @@ namespace RemoteAccessServer.Core
     public static class Logger
     {
         private static readonly object _lockObject = new object();
-        private static string _logFilePath;
+        private static string _logFilePath = string.Empty;
         private static bool _isInitialized = false;
 
         /// <summary>

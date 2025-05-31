@@ -228,7 +228,12 @@ std::vector<NetworkInterface> SystemInfo::GetNetworkInterfaces() const {
                     iface.name = std::string(buffer.data());
                 }
                 
-                iface.description = pCurr->Description;
+                int descLen = WideCharToMultiByte(CP_UTF8, 0, pCurr->Description, -1, nullptr, 0, nullptr, nullptr);
+                if (descLen > 0) {
+                    std::vector<char> descBuffer(descLen);
+                    WideCharToMultiByte(CP_UTF8, 0, pCurr->Description, -1, descBuffer.data(), descLen, nullptr, nullptr);
+                    iface.description = std::string(descBuffer.data());
+                }
                 iface.isUp = (pCurr->OperStatus == IfOperStatusUp);
                 iface.isDhcpEnabled = (pCurr->Dhcpv4Enabled == 1);
                 

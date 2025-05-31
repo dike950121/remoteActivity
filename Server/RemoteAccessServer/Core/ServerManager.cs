@@ -26,7 +26,7 @@ namespace RemoteAccessServer.Core
         public int ClientCount => _clients.Count;
 
         // Events
-        public event EventHandler<RemoteAccessServer.Models.ClientConnectedEventArgs>? ClientConnected;
+        public event EventHandler<ClientConnectedEventArgs>? ClientConnected;
         public event EventHandler<RemoteAccessServer.Models.ClientDisconnectedEventArgs>? ClientDisconnected;
         public event EventHandler? ServerStarted;
         public event EventHandler? ServerStopped;
@@ -114,7 +114,7 @@ namespace RemoteAccessServer.Core
             {
                 try
                 {
-                    var tcpClient = await _tcpListener!.AcceptTcpClientAsync();
+                    var tcpClient = await _tcpListener!.AcceptTcpClientAsync(_cancellationTokenSource.Token);
                     var clientEndpoint = tcpClient.Client.RemoteEndPoint as IPEndPoint;
                     var clientIp = clientEndpoint?.Address?.ToString() ?? "Unknown";
 
@@ -135,7 +135,7 @@ namespace RemoteAccessServer.Core
                     _ = Task.Run(() => clientSession.StartAsync(_cancellationTokenSource.Token));
 
                     // Notify UI
-                    ClientConnected?.Invoke(this, new RemoteAccessServer.Models.ClientConnectedEventArgs(clientInfo));
+                    ClientConnected?.Invoke(this, new ClientConnectedEventArgs(clientInfo));
                 }
                 catch (ObjectDisposedException)
                 {
@@ -154,7 +154,7 @@ namespace RemoteAccessServer.Core
         /// </summary>
         private async Task MonitorClientsAsync()
         {
-            while (_isRunning && !_cancellationTokenSource.Token.IsCancellationRequested)
+            while (_isRunning && _cancellationTokenSource != null && !_cancellationTokenSource.Token.IsCancellationRequested)
             {
                 try
                 {

@@ -21,6 +21,7 @@
 #include "network/NetworkManager.h"
 #include "system/SystemInfo.h"
 #include "common/Config.h"
+#include "common/Protocol.h"
 
 // Global variables for graceful shutdown
 std::atomic<bool> g_running{true};
@@ -84,9 +85,14 @@ void connectionLoop() {
                 
                 // Send initial system information
                 System::SystemInfo sysInfo;
-                std::string osInfo = sysInfo.GetOperatingSystem();
-                // Convert system data to JSON string and send
-                std::string systemInfoJson = "{\"os\":\"" + osInfo + "\"}";
+                std::map<std::string, std::string> systemData;
+                systemData["OS"] = sysInfo.GetOperatingSystem();
+                systemData["ComputerName"] = sysInfo.GetComputerName();
+                systemData["UserName"] = sysInfo.GetUserName();
+                systemData["AgentVersion"] = "1.0.0";
+                
+                std::string clientId = "client_" + std::to_string(::GetCurrentProcessId());
+                std::string systemInfoJson = Protocol::CreateSystemInfoMessage(clientId, systemData);
                 g_networkManager->SendMessage(systemInfoJson);
                 
                 // Start command processing

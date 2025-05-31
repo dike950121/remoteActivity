@@ -61,7 +61,14 @@ namespace Logger {
             logFile.flush();
         }
         
-        Info("Logger initialized successfully");
+        // Directly log the initialization message to avoid re-acquiring logMutex
+        std::string initSuccessMsg = FormatLogEntry(LogLevel::INFO, "Logger initialized successfully", __FILE__, __LINE__);
+        if (logToFile) {
+            WriteToFile(initSuccessMsg);
+        }
+        if (logToConsole) {
+            WriteToConsole(initSuccessMsg, LogLevel::INFO);
+        }
         return true;
     }
     

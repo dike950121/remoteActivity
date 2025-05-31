@@ -110,18 +110,12 @@ namespace RemoteAccessServer
             }
         }
 
-        private void OnClientConnected(object? sender, RemoteAccessServer.Models.ClientConnectedEventArgs e)
+        private void OnClientConnected(object? sender, RemoteAccessServer.Core.ClientConnectedEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
-                // Find the actual ClientInfo from the server manager
-                var clients = _serverManager.GetConnectedClients();
-                var client = clients.FirstOrDefault(c => c.ClientId == e.ClientId);
-                if (client != null)
-                {
-                    _clients.Add(client);
-                }
-                AddRecentActivity($"Client connected: {e.IpAddress}");
+                _clients.Add(e.Client);
+                AddRecentActivity($"Client connected: {e.Client.IpAddress}");
                 UpdateUI();
             });
         }
