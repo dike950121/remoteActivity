@@ -25,6 +25,31 @@ The payload is designed with the following critical features:
 
 This project is composed of two distinct components: the Server and the Client, each with specific responsibilities and technologies.
 
+```
+// Directory tree (3 levels, limited to 200 entries)
+├── .gitignore
+├── Client\
+│   └── RemoteAccessClient\
+│       ├── CMakeLists.txt
+│       ├── Logger.obj
+│       ├── Protocol.obj
+│       ├── build.bat
+│       ├── include\
+│       ├── main.obj
+│       └── src\
+├── Project detail.txt
+├── README.md
+└── Server\
+    └── RemoteAccessServer\
+        ├── App.xaml
+        ├── App.xaml.cs
+        ├── Core\
+        ├── MainWindow.xaml
+        ├── MainWindow.xaml.cs
+        ├── Models\
+        └── RemoteAccessServer.csproj
+```
+
 ### Server Project (WPF .NET)
 
 The server component will be developed using **WPF (.NET)** and will be responsible for:
