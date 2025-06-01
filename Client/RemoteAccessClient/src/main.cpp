@@ -19,9 +19,11 @@
 
 #include "common/Logger.h"
 #include "network/NetworkManager.h"
+#include "network/DDNSManager.h"
 #include "system/SystemInfo.h"
 #include "common/Config.h"
 #include "common/Protocol.h"
+#include "common/DDNSConfig.h"
 
 // Global variables for graceful shutdown
 std::atomic<bool> g_running{true};
@@ -146,6 +148,36 @@ int main(int argc, char* argv[]) {
         Logger::LogManager::GetInstance().Initialize();
         Logger::LogManager::GetInstance().Info("Remote Access Client starting...");
         
+        // Initialize DDNS configuration
+        Config::DDNSConfigManager& ddnsConfig = Config::DDNSConfigManager::GetInstance();
+        if (!ddnsConfig.LoadConfiguration()) {
+            Logger::LogManager::GetInstance().Warning("Failed to load DDNS configuration, using defaults");
+        }
+        
+        // Initialize DDNS manager if enabled
+        std::unique_ptr<Network::DDNSManager> ddnsManager;
+        if (ddnsConfig.IsEnabled()) {
+            ddnsManager = std::make_unique<Network::DDNSManager>();
+            
+            // Configure DDNS providers
+            auto providers = ddnsConfig.GetProviders();
+            for (const auto& config : providers) {
+                ddnsManager->AddProvider(config);
+            }
+            
+            // Set fallback configuration
+            ddnsManager->SetFallbackEnabled(ddnsConfig.IsFallbackEnabled());
+            ddnsManager->SetFallbackOrder(ddnsConfig.GetFallbackOrder());
+            ddnsManager->SetIPDetectionServices(ddnsConfig.GetIPDetectionServices());
+            
+            // Start DDNS manager
+            if (ddnsManager->Start()) {
+                Logger::LogManager::GetInstance().Info("DDNS manager started successfully");
+            } else {
+                Logger::LogManager::GetInstance().Error("Failed to start DDNS manager");
+            }
+        }
+        
         // Parse command line arguments
         bool hideWindow = true;
         for (int i = 1; i < argc; ++i) {
@@ -197,6 +229,12 @@ int main(int argc, char* argv[]) {
         // Wait for connection thread to finish
         if (connectionThread.joinable()) {
             connectionThread.join();
+        }
+        
+        // Stop DDNS manager if running
+        if (ddnsManager && ddnsManager->IsRunning()) {
+            ddnsManager->Stop();
+            Logger::LogManager::GetInstance().Info("DDNS manager stopped");
         }
         
         // Cleanup

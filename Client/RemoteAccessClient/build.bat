@@ -12,8 +12,10 @@ cl /std:c++17 /O2 /EHsc /DWIN32_LEAN_AND_MEAN /DNOMINMAX /D_WIN32_WINNT=0x0601 ^
     /I"include" ^
     src\main.cpp ^
     src\network\NetworkManager.cpp ^
+    src\network\DDNSManager.cpp ^
     src\common\Logger.cpp ^
     src\common\Protocol.cpp ^
+    src\common\DDNSConfig.cpp ^
     src\system\SystemInfo.cpp ^
     /Fe:bin\RemoteAccessClient.exe ^
     /link ws2_32.lib wininet.lib advapi32.lib kernel32.lib user32.lib shell32.lib ^
