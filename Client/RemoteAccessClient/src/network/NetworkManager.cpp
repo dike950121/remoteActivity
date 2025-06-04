@@ -172,12 +172,12 @@ namespace Network {
         
         // Set socket options
 #ifdef _WIN32
-        DWORD timeout = connectTimeout * 1000; // Convert to milliseconds
+        DWORD timeout = 30000; // 30 seconds timeout
         setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
         setsockopt(clientSocket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout));
 #else
         struct timeval tv;
-        tv.tv_sec = connectTimeout;
+        tv.tv_sec = 30; // 30 seconds timeout
         tv.tv_usec = 0;
         setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
         setsockopt(clientSocket, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
@@ -187,6 +187,9 @@ namespace Network {
         int keepAlive = 1;
         setsockopt(clientSocket, SOL_SOCKET, SO_KEEPALIVE, (const char*)&keepAlive, sizeof(keepAlive));
         
+        // Set TCP_NODELAY to disable Nagle's algorithm for better responsiveness
+        int noDelay = 1;
+        setsockopt(clientSocket, IPPROTO_TCP, TCP_NODELAY, (const char*)&noDelay, sizeof(noDelay));
         LOG_DEBUG("Socket created successfully");
         return true;
     }
@@ -309,9 +312,24 @@ namespace Network {
                 int result = send(clientSocket, data.c_str(), static_cast<int>(data.length()), 0);
                 
                 if (result == SOCKET_ERROR) {
-                    LOG_ERROR("Failed to send message: " + GetLastSocketError());
-                    HandleConnectionLost();
-                    break;
+                    int error = 
+#ifdef _WIN32
+                        WSAGetLastError();
+                    if (error != WSAETIMEDOUT && error != WSAEWOULDBLOCK) {
+#else
+                        errno;
+                    if (error != EAGAIN && error != EWOULDBLOCK && error != ETIMEDOUT) {
+#endif
+                        LOG_ERROR("Failed to send message: " + GetLastSocketError());
+                        HandleConnectionLost();
+                        break;
+                    } else {
+                        // Timeout or would block - retry the message
+                        sendQueue.push(message);
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                        lock.lock();
+                        continue;
+                    }
                 } else {
                     bytesSent += result;
                     messagesSent++;
@@ -334,15 +352,19 @@ namespace Network {
                 int error = 
 #ifdef _WIN32
                     WSAGetLastError();
-                if (error != WSAETIMEDOUT) {
+                if (error != WSAETIMEDOUT && error != WSAEWOULDBLOCK) {
 #else
                     errno;
-                if (error != EAGAIN && error != EWOULDBLOCK) {
+                if (error != EAGAIN && error != EWOULDBLOCK && error != ETIMEDOUT) {
 #endif
                     LOG_ERROR("Receive error: " + GetLastSocketError());
                     HandleConnectionLost();
+                    break;
+                } else {
+                    // Timeout or would block - continue receiving
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    continue;
                 }
-                break;
             } else if (bytesReceived == 0) {
                 LOG_INFO("Server closed the connection");
                 HandleConnectionLost();

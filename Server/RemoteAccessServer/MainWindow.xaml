@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Remote Access Server - C2 Control Panel" Height="800" Width="1200"
         WindowStartupLocation="CenterScreen"
-        Background="#FF2D2D30">
+        Background="#FF1A1A2E">
     
     <Grid>
         <Grid.RowDefinitions>
@@ -18,7 +18,7 @@
         </Grid.ColumnDefinitions>
         
         <!-- Header/Title Bar -->
-        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#FF1E1E1E" Padding="10">
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#FF16213E" Padding="10">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="🎯" FontSize="20" Margin="0,0,10,0"/>
                 <TextBlock Text="Remote Access Server" FontSize="16" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
@@ -27,12 +27,13 @@
         </Border>
         
         <!-- Navigation Pane -->
-        <Border Grid.Row="1" Grid.Column="0" Background="#FF3F3F46" BorderBrush="#FF007ACC" BorderThickness="0,0,1,0">
+        <Border Grid.Row="1" Grid.Column="0" Background="#FF0F3460" BorderBrush="#FF533483" BorderThickness="0,0,1,0">
             <StackPanel Margin="10">
                 <TextBlock Text="Navigation" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
                 
                 <Button x:Name="DashboardBtn" Content="📊 Dashboard" Click="NavigationButton_Click" Tag="Dashboard" HorizontalAlignment="Stretch"/>
                 <Button x:Name="ClientsBtn" Content="💻 Clients" Click="NavigationButton_Click" Tag="Clients" HorizontalAlignment="Stretch"/>
+                <Button x:Name="FirewallBtn" Content="🛡️ Firewall Control" Click="NavigationButton_Click" Tag="Firewall" HorizontalAlignment="Stretch"/>
                 <Button x:Name="ShellBtn" Content="⚡ Remote Shell" Click="NavigationButton_Click" Tag="Shell" HorizontalAlignment="Stretch"/>
                 <Button x:Name="FileManagerBtn" Content="📁 File Manager" Click="NavigationButton_Click" Tag="FileManager" HorizontalAlignment="Stretch"/>
                 <Button x:Name="ScreenControlBtn" Content="🖥️ Screen Control" Click="NavigationButton_Click" Tag="ScreenControl" HorizontalAlignment="Stretch"/>
@@ -42,13 +43,13 @@
                 
                 <Separator Margin="0,20,0,10"/>
                 
-                <Button x:Name="StartServerBtn" Content="▶️ Start Server" Click="StartServer_Click" Background="#FF0E7D0E" HorizontalAlignment="Stretch"/>
-                <Button x:Name="StopServerBtn" Content="⏹️ Stop Server" Click="StopServer_Click" Background="#FFD13438" HorizontalAlignment="Stretch" IsEnabled="False"/>
+                <Button x:Name="StartServerBtn" Content="▶️ Start Server" Click="StartServer_Click" Background="#FF533483" Foreground="White" Padding="10,5" HorizontalAlignment="Stretch"/>
+                <Button x:Name="StopServerBtn" Content="⏹️ Stop Server" Click="StopServer_Click" Background="#FFE94560" Foreground="White" Padding="10,5" HorizontalAlignment="Stretch" IsEnabled="False"/>
             </StackPanel>
         </Border>
         
         <!-- Main Content Area -->
-        <Border Grid.Row="1" Grid.Column="1" Background="#FF1E1E1E" Padding="20">
+        <Border Grid.Row="1" Grid.Column="1" Background="#FF1A1A2E" Padding="20">
             <Grid x:Name="MainContentGrid">
                 <!-- Dashboard View -->
                 <StackPanel x:Name="DashboardView" Visibility="Visible">
@@ -62,36 +63,36 @@
                         </Grid.ColumnDefinitions>
                         
                         <!-- Statistics Cards -->
-                        <Border Grid.Column="0" Background="#FF3F3F46" Padding="15" Margin="0,0,10,0" CornerRadius="5">
+                        <Border Grid.Column="0" Background="#FF0F3460" Padding="15" Margin="0,0,10,0" CornerRadius="5">
                             <StackPanel>
                                 <TextBlock Text="Connected Clients" FontWeight="Bold" Foreground="White"/>
-                                <TextBlock x:Name="ConnectedClientsCount" Text="0" FontSize="32" FontWeight="Bold" Foreground="#FF007ACC"/>
+                                <TextBlock x:Name="ConnectedClientsCount" Text="0" FontSize="32" FontWeight="Bold" Foreground="#FF533483"/>
                             </StackPanel>
                         </Border>
                         
-                        <Border Grid.Column="1" Background="#FF3F3F46" Padding="15" Margin="5,0" CornerRadius="5">
+                        <Border Grid.Column="1" Background="#FF0F3460" Padding="15" Margin="5,0" CornerRadius="5">
                             <StackPanel>
                                 <TextBlock Text="Commands Sent" FontWeight="Bold" Foreground="White"/>
-                                <TextBlock x:Name="CommandsSentCount" Text="0" FontSize="32" FontWeight="Bold" Foreground="#FF28A745"/>
+                                <TextBlock x:Name="CommandsSentCount" Text="0" FontSize="32" FontWeight="Bold" Foreground="#FF00D4AA"/>
                             </StackPanel>
                         </Border>
                         
-                        <Border Grid.Column="2" Background="#FF3F3F46" Padding="15" Margin="10,0,0,0" CornerRadius="5">
+                        <Border Grid.Column="2" Background="#FF0F3460" Padding="15" Margin="10,0,0,0" CornerRadius="5">
                             <StackPanel>
                                 <TextBlock Text="Data Transferred" FontWeight="Bold" Foreground="White"/>
-                                <TextBlock x:Name="DataTransferredCount" Text="0 MB" FontSize="32" FontWeight="Bold" Foreground="#FFFFC107"/>
+                                <TextBlock x:Name="DataTransferredCount" Text="0 MB" FontSize="32" FontWeight="Bold" Foreground="#FFFF6B6B"/>
                             </StackPanel>
                         </Border>
                     </Grid>
                     
                     <TextBlock Text="Recent Activity" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,30,0,10"/>
-                    <ListBox x:Name="RecentActivityList" Background="#FF3F3F46" Foreground="White" Height="200" BorderBrush="#FF007ACC"/>
+                    <ListBox x:Name="RecentActivityList" Background="#FF0F3460" Foreground="White" Height="200" BorderBrush="#FF533483"/>
                 </StackPanel>
                 
                 <!-- Clients View -->
                 <StackPanel x:Name="ClientsView" Visibility="Collapsed">
                     <TextBlock Text="Connected Clients" FontSize="24" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
-                    <DataGrid x:Name="ClientsDataGrid" Background="#FF3F3F46" Foreground="White" AutoGenerateColumns="False" Height="400">
+                    <DataGrid x:Name="ClientsDataGrid" Background="#FF0F3460" Foreground="White" AutoGenerateColumns="False" Height="400">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Client ID" Binding="{Binding ClientId}" Width="150"/>
                             <DataGridTextColumn Header="IP Address" Binding="{Binding IpAddress}" Width="120"/>
@@ -102,6 +103,269 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>
+
+                <!-- Firewall Control View -->
+                <Grid x:Name="FirewallView" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Header -->
+                    <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                        <TextBlock Text="Server Firewall Control" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Text="Control firewall settings on the selected remote server" FontSize="12" Foreground="#FFAAAAAA" Margin="0,5,0,0"/>
+                    </StackPanel>
+                    
+                    <!-- Client Selection and Controls -->
+                    <Grid Grid.Row="1" Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="Select Client:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <ComboBox x:Name="FirewallClientComboBox" Grid.Column="1" Background="#FF0F3460" Foreground="White" SelectionChanged="FirewallClientComboBox_SelectionChanged"/>
+                        
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="20,0,0,0">
+                            <Button x:Name="RefreshFirewallBtn" Content="🔄 Refresh Status" Click="RefreshFirewall_Click" Background="#FF533483" Foreground="White" Padding="10,5" Margin="0,0,10,0"/>
+                            <Button x:Name="EnableFirewallBtn" Content="🛡️ Enable" Click="EnableFirewall_Click" Background="#FF00D4AA" Foreground="White" Padding="10,5" Margin="0,0,10,0"/>
+                            <Button x:Name="DisableFirewallBtn" Content="🚫 Disable" Click="DisableFirewall_Click" Background="#FFE94560" Foreground="White" Padding="10,5" Margin="0,0,10,0"/>
+                            <Button x:Name="ResetFirewallBtn" Content="🔄 Reset" Click="ResetFirewall_Click" Background="#FFFF6B6B" Foreground="White" Padding="10,5"/>
+                        </StackPanel>
+                    </Grid>
+                    
+                    <!-- Firewall Content -->
+                    <TabControl Grid.Row="2" Background="#FF0F3460" BorderBrush="#FF533483">
+                        <TabControl.Resources>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Background" Value="#FF1A1A2E"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Padding" Value="12,8"/>
+                                <Setter Property="Margin" Value="2,0"/>
+                                <Setter Property="BorderBrush" Value="#FF533483"/>
+                                <Setter Property="BorderThickness" Value="1,1,1,0"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#FF533483"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#FF6C5CE7"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TabControl.Resources>
+                        <!-- Status Tab -->
+                        <TabItem Header="Status">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Text="Firewall Status" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,0,0,15"/>
+                                
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- Domain Profile -->
+                                    <Border Grid.Column="0" Background="#FF1A1A2E" Padding="15" Margin="0,0,10,0" CornerRadius="5">
+                                        <StackPanel>
+                                            <TextBlock Text="Domain Profile" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+                                            <TextBlock x:Name="DomainProfileStatus" Text="Status: Unknown" Foreground="Gray"/>
+                                            <TextBlock x:Name="DomainInboundAction" Text="Inbound: Unknown" Foreground="Gray"/>
+                                            <TextBlock x:Name="DomainOutboundAction" Text="Outbound: Unknown" Foreground="Gray"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <!-- Private Profile -->
+                                    <Border Grid.Column="1" Background="#FF1A1A2E" Padding="15" Margin="5,0" CornerRadius="5">
+                                        <StackPanel>
+                                            <TextBlock Text="Private Profile" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+                                            <TextBlock x:Name="PrivateProfileStatus" Text="Status: Unknown" Foreground="Gray"/>
+                                            <TextBlock x:Name="PrivateInboundAction" Text="Inbound: Unknown" Foreground="Gray"/>
+                                            <TextBlock x:Name="PrivateOutboundAction" Text="Outbound: Unknown" Foreground="Gray"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <!-- Public Profile -->
+                                    <Border Grid.Column="2" Background="#FF2D2D30" Padding="15" Margin="10,0,0,0" CornerRadius="5">
+                                        <StackPanel>
+                                            <TextBlock Text="Public Profile" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+                                            <TextBlock x:Name="PublicProfileStatus" Text="Status: Unknown" Foreground="Gray"/>
+                                            <TextBlock x:Name="PublicInboundAction" Text="Inbound: Unknown" Foreground="Gray"/>
+                                            <TextBlock x:Name="PublicOutboundAction" Text="Outbound: Unknown" Foreground="Gray"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </Grid>
+                        </TabItem>
+                        
+                        <!-- Rules Tab -->
+                        <TabItem Header="Rules">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Text="Firewall Rules" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,0,0,15"/>
+                                
+                                <!-- Add Rule Form -->
+                                <GroupBox Grid.Row="1" Header="Add New Rule" Foreground="White" Margin="0,0,0,15">
+                                    <Grid Margin="10">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- Row 1 -->
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="RuleNameTextBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,5"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Direction:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="3" x:Name="DirectionComboBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,5">
+                                            <ComboBoxItem Content="Inbound"/>
+                                            <ComboBoxItem Content="Outbound"/>
+                                        </ComboBox>
+                                        <TextBlock Grid.Row="0" Grid.Column="4" Text="Action:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="5" x:Name="ActionComboBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,5">
+                                            <ComboBoxItem Content="Allow"/>
+                                            <ComboBoxItem Content="Block"/>
+                                        </ComboBox>
+                                        
+                                        <!-- Row 2 -->
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Local Ports:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="LocalPortsTextBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,5"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Remote Ports:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                        <TextBox Grid.Row="1" Grid.Column="3" x:Name="RemotePortsTextBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,5"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="4" Text="Profile:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                        <ComboBox Grid.Row="1" Grid.Column="5" x:Name="ProfileComboBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,5">
+                                            <ComboBoxItem Content="Any"/>
+                                            <ComboBoxItem Content="Domain"/>
+                                            <ComboBoxItem Content="Private"/>
+                                            <ComboBoxItem Content="Public"/>
+                                        </ComboBox>
+                                        
+                                        <!-- Row 3 -->
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Local Address:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="LocalAddressesTextBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,5"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="2" Text="Remote Address:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                        <TextBox Grid.Row="2" Grid.Column="3" x:Name="RemoteAddressesTextBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,5"/>
+                                        <CheckBox Grid.Row="2" Grid.Column="4" x:Name="EnabledCheckBox" Content="Enabled" Foreground="White" IsChecked="True" Margin="0,0,10,5"/>
+                                        
+                                        <!-- Row 4 -->
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Program:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="ProgramTextBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,5"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="2" Text="Service:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                        <TextBox Grid.Row="3" Grid.Column="3" x:Name="ServiceTextBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,5"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="4" Text="Description:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,5"/>
+                                        <TextBox Grid.Row="3" Grid.Column="5" x:Name="DescriptionTextBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,5"/>
+                                    </Grid>
+                                </GroupBox>
+                                
+                                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,15">
+                                    <Button x:Name="AddRuleBtn" Content="➕ Add Rule" Click="AddRule_Click" Background="#FF28A745" Foreground="White" Padding="10,5" Margin="0,0,10,0"/>
+                                    <Button x:Name="RemoveRuleBtn" Content="➖ Remove Rule" Click="RemoveRule_Click" Background="#FFD13438" Foreground="White" Padding="10,5" Margin="0,0,10,0"/>
+                                    <Button x:Name="RefreshRulesBtn" Content="🔄 Refresh" Click="RefreshRules_Click" Background="#FF007ACC" Foreground="White" Padding="10,5"/>
+                                </StackPanel>
+                                
+                                <DataGrid Grid.Row="3" x:Name="FirewallRulesDataGrid" Background="#FF2D2D30" Foreground="White" AutoGenerateColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
+                                        <DataGridTextColumn Header="Direction" Binding="{Binding Direction}" Width="80"/>
+                                        <DataGridTextColumn Header="Action" Binding="{Binding Action}" Width="80"/>
+                                        <DataGridTextColumn Header="Protocol" Binding="{Binding Protocol}" Width="80"/>
+                                        <DataGridTextColumn Header="Local Port" Binding="{Binding LocalPort}" Width="100"/>
+                                        <DataGridTextColumn Header="Remote Address" Binding="{Binding RemoteAddress}" Width="120"/>
+                                        <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding Enabled}" Width="80"/>
+                                        <DataGridTextColumn Header="Profile" Binding="{Binding Profile}" Width="80"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+                        
+                        <!-- Quick Actions Tab -->
+                        <TabItem Header="Quick Actions">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Text="Quick Firewall Actions" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
+                                
+                                <!-- Block/Allow IP -->
+                                <GroupBox Grid.Row="1" Header="IP Address Control" Foreground="White" Margin="0,0,0,15">
+                                    <StackPanel Margin="10">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="200"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <TextBlock Grid.Column="0" Text="IP Address:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <TextBox Grid.Column="1" x:Name="IpAddressTextBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,0"/>
+                                            <Button Grid.Column="2" x:Name="BlockIpBtn" Content="🚫 Block IP" Click="BlockIp_Click" Background="#FFD13438" Foreground="White" Padding="10,5" Margin="0,0,10,0"/>
+                                            <Button Grid.Column="3" x:Name="AllowIpBtn" Content="✅ Allow IP" Click="AllowIp_Click" Background="#FF28A745" Foreground="White" Padding="10,5"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </GroupBox>
+                                
+                                <!-- Block/Allow Port -->
+                                <GroupBox Grid.Row="2" Header="Port Control" Foreground="White" Margin="0,0,0,15">
+                                    <StackPanel Margin="10">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <TextBlock Grid.Column="0" Text="Port:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <TextBox Grid.Column="1" x:Name="PortTextBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,0"/>
+                                            <TextBlock Grid.Column="2" Text="Protocol:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <ComboBox Grid.Column="3" x:Name="ProtocolComboBox" Background="#FF2D2D30" Foreground="White" Margin="0,0,10,0">
+                                                <ComboBoxItem Content="TCP"/>
+                                                <ComboBoxItem Content="UDP"/>
+                                            </ComboBox>
+                                            <Button Grid.Column="4" x:Name="BlockPortBtn" Content="🚫 Block Port" Click="BlockPort_Click" Background="#FFD13438" Foreground="White" Padding="10,5" Margin="0,0,10,0"/>
+                                            <Button Grid.Column="5" x:Name="AllowPortBtn" Content="✅ Allow Port" Click="AllowPort_Click" Background="#FF28A745" Foreground="White" Padding="10,5"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </GroupBox>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
                 
                 <!-- Other views will be added as we develop more stages -->
                 <TextBlock x:Name="PlaceholderView" Text="Select a section from the navigation menu" 

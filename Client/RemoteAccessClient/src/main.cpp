@@ -97,6 +97,9 @@ void connectionLoop() {
                 std::string systemInfoJson = Protocol::CreateSystemInfoMessage(clientId, systemData);
                 g_networkManager->SendMessage(systemInfoJson);
                 
+                // Give server time to process the system info message
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                
                 // Start command processing
                 // CommandProcessor cmdProcessor(g_networkManager.get()); // Commented out as CommandProcessor is not included
                 

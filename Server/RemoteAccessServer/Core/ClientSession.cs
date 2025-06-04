@@ -188,7 +188,7 @@ namespace RemoteAccessServer.Core
         /// <summary>
         /// Handle heartbeat message from client
         /// </summary>
-        private Task HandleHeartbeatAsync(dynamic message)
+        private async Task HandleHeartbeatAsync(dynamic message)
         {
             _lastHeartbeat = DateTime.Now;
             
@@ -198,7 +198,16 @@ namespace RemoteAccessServer.Core
                 var ping = (int)(DateTime.UtcNow - clientTime).TotalMilliseconds;
                 ClientInfo.UpdatePing(Math.Max(0, ping));
             }
-            return Task.CompletedTask;
+            
+            // Send heartbeat response back to client
+            var heartbeatResponse = new
+            {
+                Type = "heartbeat_response",
+                Timestamp = DateTime.UtcNow,
+                Sequence = message?.Sequence?.ToString() ?? "0"
+            };
+            
+            await SendMessageAsync(heartbeatResponse);
         }
 
         /// <summary>
