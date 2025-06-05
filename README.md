@@ -61,7 +61,7 @@ The server component will be developed using **WPF (.NET)** and will be responsi
 
 ### Client Project (C++)
 
-The client component will be developed using **C++** and compiled with the **Microsoft Visual Studio 2022** compiler. Its responsibilities include:
+The client component will be developed using **C++** and compiled with the **MinGW g++/gcc** compiler. Its responsibilities include:
 
 -   **Payload Execution**: Running silently on the target Windows system.
 -   **Communication**: Establishing and maintaining a connection with the server.
@@ -71,7 +71,7 @@ The client component will be developed using **C++** and compiled with the **Mic
 
 ## Compilation:
 
-The client project will be compiled using the **Microsoft Visual Studio 2022** compiler.
+The client project will be compiled using the **MinGW g++/gcc** compiler located at `C:\MinGW\bin`.
 
 ## Technical Requirements:
 
