@@ -1,6 +1,22 @@
-# Remote Access Payload Project
+# Remote Access Payload for Windows
 
 This project involves the development of a sophisticated remote access payload specifically targeting Windows operating systems. The primary goal is to create a stealthy and robust tool for cybersecurity graduation project, focusing on advanced remote access capabilities.
+
+## Table of Contents
+
+- [Key Features](#key-features)
+- [Project Structure and Responsibilities](#project-structure-and-responsibilities)
+  - [Server Project (WPF .NET)](#server-project-wpf-net)
+  - [Client Project (C++)](#client-project-c)
+- [Compilation](#compilation)
+- [Technical Requirements](#technical-requirements)
+- [Development Guidelines](#development-guidelines)
+  - [General Guidelines](#general-guidelines)
+  - [Server Project (WPF .NET) Specific Guidelines](#server-project-wpf-net-specific-guidelines)
+  - [Client Project (C++) Specific Guidelines](#client-project-c-specific-guidelines)
+- [Development Stages Breakdown](#development-stages-breakdown)
+  - [Phase 1: Foundation & Infrastructure (Stages 1-12)](#phase-1-foundation--infrastructure-stages-1-12)
+  - [Phase 2: Core Remote Access Features (Stages 13-25)](#phase-2-core-remote-access-features-stages-13-25)
 
 ## Key Features:
 
@@ -28,25 +44,21 @@ This project is composed of two distinct components: the Server and the Client, 
 ```
 // Directory tree (3 levels, limited to 200 entries)
 ├── .gitignore
-├── Client\
-│   └── RemoteAccessClient\
-│       ├── CMakeLists.txt
-│       ├── Logger.obj
-│       ├── Protocol.obj
+├── RemoteAccessClient\
 │       ├── build.bat
 │       ├── include\
-│       ├── main.obj
 │       └── src\
 ├── Project detail.txt
 ├── README.md
-└── Server\
-    └── RemoteAccessServer\
+└── RemoteAccessServer\
         ├── App.xaml
         ├── App.xaml.cs
         ├── Core\
         ├── MainWindow.xaml
         ├── MainWindow.xaml.cs
         ├── Models\
+        ├── Views\
+        ├── Controllers\
         └── RemoteAccessServer.csproj
 ```
 
@@ -107,6 +119,7 @@ To ensure a cohesive and effective development process, please adhere to the fol
 -   **Stealth Implementation**: Ensure all stealth and persistence mechanisms are thoroughly tested and effective against detection. Avoid any actions that could reveal the payload's presence.
 -   **Memory Management**: Pay close attention to memory management to prevent leaks and ensure the payload operates with a minimal footprint.
 -   **Cross-Process Communication**: For features requiring interaction with other processes or system components, use secure and robust inter-process communication (IPC) methods.
+
 -   **Anti-Analysis Techniques**: Continuously research and implement new anti-analysis and anti-reverse engineering techniques to protect the payload.
 
 ## Development Stages Breakdown
