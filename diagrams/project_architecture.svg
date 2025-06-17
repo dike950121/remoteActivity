@@ -1,0 +1,167 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #2c3e50; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #34495e; }
+      .text { font-family: Arial, sans-serif; font-size: 12px; fill: #2c3e50; }
+      .small-text { font-family: Arial, sans-serif; font-size: 10px; fill: #7f8c8d; }
+      .server-box { fill: #3498db; stroke: #2980b9; stroke-width: 2; }
+      .client-box { fill: #e74c3c; stroke: #c0392b; stroke-width: 2; }
+      .network-box { fill: #f39c12; stroke: #e67e22; stroke-width: 2; }
+      .feature-box { fill: #2ecc71; stroke: #27ae60; stroke-width: 2; }
+      .arrow { stroke: #34495e; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .bidirectional { stroke: #9b59b6; stroke-width: 2; fill: none; marker-end: url(#arrowhead); marker-start: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#34495e" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="600" y="30" text-anchor="middle" class="title">Remote Access Payload - Project Architecture</text>
+  
+  <!-- Server Side -->
+  <rect x="50" y="80" width="300" height="400" rx="10" class="server-box" opacity="0.1"/>
+  <text x="200" y="105" text-anchor="middle" class="subtitle">SERVER SIDE (WPF .NET)</text>
+  
+  <!-- Server Components -->
+  <rect x="70" y="120" width="120" height="60" rx="5" class="server-box"/>
+  <text x="130" y="140" text-anchor="middle" class="text">Command &amp; Control</text>
+  <text x="130" y="155" text-anchor="middle" class="small-text">(C2 Server)</text>
+  <text x="130" y="170" text-anchor="middle" class="small-text">Multi-client mgmt</text>
+  
+  <rect x="210" y="120" width="120" height="60" rx="5" class="server-box"/>
+  <text x="270" y="140" text-anchor="middle" class="text">User Interface</text>
+  <text x="270" y="155" text-anchor="middle" class="small-text">WPF Dashboard</text>
+  <text x="270" y="170" text-anchor="middle" class="small-text">Real-time monitoring</text>
+  
+  <rect x="70" y="200" width="120" height="60" rx="5" class="server-box"/>
+  <text x="130" y="220" text-anchor="middle" class="text">Data Handler</text>
+  <text x="130" y="235" text-anchor="middle" class="small-text">File transfers</text>
+  <text x="130" y="250" text-anchor="middle" class="small-text">Screen streaming</text>
+  
+  <rect x="210" y="200" width="120" height="60" rx="5" class="server-box"/>
+  <text x="270" y="220" text-anchor="middle" class="text">Command Issuer</text>
+  <text x="270" y="235" text-anchor="middle" class="small-text">Remote execution</text>
+  <text x="270" y="250" text-anchor="middle" class="small-text">System control</text>
+  
+  <rect x="70" y="280" width="260" height="80" rx="5" class="server-box"/>
+  <text x="200" y="300" text-anchor="middle" class="text">Server Features</text>
+  <text x="90" y="320" class="small-text">• Asynchronous TCP server</text>
+  <text x="90" y="335" class="small-text">• Connection pool management</text>
+  <text x="90" y="350" class="small-text">• DDNS integration (NO-IP, DuckDNS)</text>
+  
+  <rect x="70" y="380" width="260" height="80" rx="5" class="server-box"/>
+  <text x="200" y="400" text-anchor="middle" class="text">Security Features</text>
+  <text x="90" y="420" class="small-text">• AES-256 encryption</text>
+  <text x="90" y="435" class="small-text">• Secure key exchange (Diffie-Hellman)</text>
+  <text x="90" y="450" class="small-text">• Message authentication (HMAC)</text>
+  
+  <!-- Client Side -->
+  <rect x="850" y="80" width="300" height="400" rx="10" class="client-box" opacity="0.1"/>
+  <text x="1000" y="105" text-anchor="middle" class="subtitle">CLIENT SIDE (C++)</text>
+  
+  <!-- Client Components -->
+  <rect x="870" y="120" width="120" height="60" rx="5" class="client-box"/>
+  <text x="930" y="140" text-anchor="middle" class="text">Payload Executor</text>
+  <text x="930" y="155" text-anchor="middle" class="small-text">Silent operation</text>
+  <text x="930" y="170" text-anchor="middle" class="small-text">Self-contained</text>
+  
+  <rect x="1010" y="120" width="120" height="60" rx="5" class="client-box"/>
+  <text x="1070" y="140" text-anchor="middle" class="text">Communication</text>
+  <text x="1070" y="155" text-anchor="middle" class="small-text">TCP client</text>
+  <text x="1070" y="170" text-anchor="middle" class="small-text">Auto-reconnect</text>
+  
+  <rect x="870" y="200" width="120" height="60" rx="5" class="client-box"/>
+  <text x="930" y="220" text-anchor="middle" class="text">Remote Access</text>
+  <text x="930" y="235" text-anchor="middle" class="small-text">Command execution</text>
+  <text x="930" y="250" text-anchor="middle" class="small-text">File operations</text>
+  
+  <rect x="1010" y="200" width="120" height="60" rx="5" class="client-box"/>
+  <text x="1070" y="220" text-anchor="middle" class="text">Stealth &amp; Persist</text>
+  <text x="1070" y="235" text-anchor="middle" class="small-text">Anti-detection</text>
+  <text x="1070" y="250" text-anchor="middle" class="small-text">Persistence</text>
+  
+  <rect x="870" y="280" width="260" height="80" rx="5" class="client-box"/>
+  <text x="1000" y="300" text-anchor="middle" class="text">Advanced Features</text>
+  <text x="890" y="320" class="small-text">• Screen capture &amp; streaming</text>
+  <text x="890" y="335" class="small-text">• Keylogger &amp; activity monitoring</text>
+  <text x="890" y="350" class="small-text">• Network propagation &amp; lateral movement</text>
+  
+  <rect x="870" y="380" width="260" height="80" rx="5" class="client-box"/>
+  <text x="1000" y="400" text-anchor="middle" class="text">Stealth Mechanisms</text>
+  <text x="890" y="420" class="small-text">• Code obfuscation &amp; anti-analysis</text>
+  <text x="890" y="435" class="small-text">• Process hollowing &amp; injection</text>
+  <text x="890" y="450" class="small-text">• Kernel-level persistence</text>
+  
+  <!-- Network Communication -->
+  <rect x="400" y="200" width="400" height="200" rx="10" class="network-box" opacity="0.1"/>
+  <text x="600" y="225" text-anchor="middle" class="subtitle">NETWORK COMMUNICATION</text>
+  
+  <rect x="420" y="240" width="160" height="50" rx="5" class="network-box"/>
+  <text x="500" y="260" text-anchor="middle" class="text">Encrypted Channel</text>
+  <text x="500" y="275" text-anchor="middle" class="small-text">AES-256 + HMAC</text>
+  
+  <rect x="620" y="240" width="160" height="50" rx="5" class="network-box"/>
+  <text x="700" y="260" text-anchor="middle" class="text">Protocol Stack</text>
+  <text x="700" y="275" text-anchor="middle" class="small-text">Custom Binary Protocol</text>
+  
+  <rect x="420" y="310" width="160" height="50" rx="5" class="network-box"/>
+  <text x="500" y="330" text-anchor="middle" class="text">Connection Mgmt</text>
+  <text x="500" y="345" text-anchor="middle" class="small-text">Heartbeat &amp; Recovery</text>
+  
+  <rect x="620" y="310" width="160" height="50" rx="5" class="network-box"/>
+  <text x="700" y="330" text-anchor="middle" class="text">DDNS Support</text>
+  <text x="700" y="345" text-anchor="middle" class="small-text">Dynamic IP updates</text>
+  
+  <!-- Target Systems -->
+  <rect x="400" y="520" width="400" height="200" rx="10" class="feature-box" opacity="0.1"/>
+  <text x="600" y="545" text-anchor="middle" class="subtitle">TARGET CAPABILITIES</text>
+  
+  <rect x="420" y="560" width="110" height="70" rx="5" class="feature-box"/>
+  <text x="475" y="580" text-anchor="middle" class="text">System Control</text>
+  <text x="430" y="595" class="small-text">• Remote shell</text>
+  <text x="430" y="608" class="small-text">• Process mgmt</text>
+  <text x="430" y="621" class="small-text">• Registry ops</text>
+  
+  <rect x="545" y="560" width="110" height="70" rx="5" class="feature-box"/>
+  <text x="600" y="580" text-anchor="middle" class="text">Data Access</text>
+  <text x="555" y="595" class="small-text">• File operations</text>
+  <text x="555" y="608" class="small-text">• Data exfiltration</text>
+  <text x="555" y="621" class="small-text">• Credential harvest</text>
+  
+  <rect x="670" y="560" width="110" height="70" rx="5" class="feature-box"/>
+  <text x="725" y="580" text-anchor="middle" class="text">Monitoring</text>
+  <text x="680" y="595" class="small-text">• Screen capture</text>
+  <text x="680" y="608" class="small-text">• Keylogging</text>
+  <text x="680" y="621" class="small-text">• Audio/Video</text>
+  
+  <rect x="420" y="645" width="180" height="60" rx="5" class="feature-box"/>
+  <text x="510" y="665" text-anchor="middle" class="text">Network Propagation</text>
+  <text x="430" y="680" class="small-text">• Lateral movement</text>
+  <text x="430" y="695" class="small-text">• Active Directory targeting</text>
+  
+  <rect x="620" y="645" width="160" height="60" rx="5" class="feature-box"/>
+  <text x="700" y="665" text-anchor="middle" class="text">Scalability</text>
+  <text x="630" y="680" class="small-text">• 100,000+ devices</text>
+  <text x="630" y="695" class="small-text">• Distributed C2</text>
+  
+  <!-- Arrows -->
+  <line x1="350" y1="280" x2="420" y2="280" class="bidirectional"/>
+  <line x1="780" y1="280" x2="850" y2="280" class="bidirectional"/>
+  <line x1="600" y1="400" x2="600" y2="520" class="arrow"/>
+  
+  <!-- Labels for arrows -->
+  <text x="385" y="275" text-anchor="middle" class="small-text">Encrypted</text>
+  <text x="385" y="290" text-anchor="middle" class="small-text">Commands</text>
+  
+  <text x="815" y="275" text-anchor="middle" class="small-text">Data &amp;</text>
+  <text x="815" y="290" text-anchor="middle" class="small-text">Responses</text>
+  
+  <text x="620" y="470" text-anchor="middle" class="small-text">Target System</text>
+  <text x="620" y="485" text-anchor="middle" class="small-text">Operations</text>
+  
+  <!-- Compilation info -->
+  <text x="600" y="760" text-anchor="middle" class="small-text">Client compiled with MinGW g++/gcc at C:\MinGW\bin</text>
+  <text x="600" y="780" text-anchor="middle" class="small-text">Server developed in WPF .NET with Visual Studio 2022</text>
+</svg>

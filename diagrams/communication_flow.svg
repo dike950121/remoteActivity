@@ -1,0 +1,161 @@
+<svg width="1400" height="1000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #2c3e50; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #34495e; }
+      .text { font-family: Arial, sans-serif; font-size: 12px; fill: #2c3e50; }
+      .small-text { font-family: Arial, sans-serif; font-size: 10px; fill: #7f8c8d; }
+      .step-text { font-family: Arial, sans-serif; font-size: 11px; fill: #2c3e50; }
+      .server-line { stroke: #3498db; stroke-width: 3; }
+      .client-line { stroke: #e74c3c; stroke-width: 3; }
+      .message-box { fill: #ecf0f1; stroke: #bdc3c7; stroke-width: 1; }
+      .init-box { fill: #f39c12; stroke: #e67e22; stroke-width: 2; }
+      .security-box { fill: #9b59b6; stroke: #8e44ad; stroke-width: 2; }
+      .operation-box { fill: #2ecc71; stroke: #27ae60; stroke-width: 2; }
+      .arrow { stroke: #34495e; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .response-arrow { stroke: #e67e22; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#34495e" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="700" y="30" text-anchor="middle" class="title">Client-Server Communication Flow</text>
+  
+  <!-- Server and Client Headers -->
+  <rect x="100" y="60" width="200" height="40" rx="5" class="server-line" fill="#3498db" opacity="0.2"/>
+  <text x="200" y="85" text-anchor="middle" class="subtitle">SERVER (WPF .NET)</text>
+  
+  <rect x="1000" y="60" width="200" height="40" rx="5" class="client-line" fill="#e74c3c" opacity="0.2"/>
+  <text x="1100" y="85" text-anchor="middle" class="subtitle">CLIENT (C++)</text>
+  
+  <!-- Vertical lines representing server and client -->
+  <line x1="200" y1="100" x2="200" y2="950" class="server-line"/>
+  <line x1="1100" y1="100" x2="1100" y2="950" class="client-line"/>
+  
+  <!-- Phase 1: Initialization -->
+  <rect x="50" y="120" width="1200" height="120" rx="5" class="init-box" opacity="0.1"/>
+  <text x="650" y="140" text-anchor="middle" class="subtitle">PHASE 1: INITIALIZATION &amp; CONNECTION</text>
+  
+  <!-- Step 1: Server Start -->
+  <rect x="50" y="160" width="300" height="30" rx="3" class="message-box"/>
+  <text x="60" y="180" class="step-text">1. Server starts listening on configured port</text>
+  
+  <!-- Step 2: DDNS Update -->
+  <rect x="50" y="200" width="300" height="30" rx="3" class="message-box"/>
+  <text x="60" y="220" class="step-text">2. Server updates DDNS (NO-IP/DuckDNS) with current IP</text>
+  
+  <!-- Step 3: Client Execution -->
+  <rect x="1050" y="160" width="300" height="30" rx="3" class="message-box"/>
+  <text x="1060" y="180" class="step-text">1. Client payload executes silently</text>
+  
+  <!-- Step 4: Client Connection -->
+  <rect x="1050" y="200" width="300" height="30" rx="3" class="message-box"/>
+  <text x="1060" y="220" class="step-text">2. Client resolves server IP via DDNS</text>
+  
+  <!-- Connection arrow -->
+  <line x1="1100" y1="240" x2="200" y2="240" class="arrow"/>
+  <text x="650" y="235" text-anchor="middle" class="step-text">TCP Connection Request</text>
+  
+  <!-- Phase 2: Security Handshake -->
+  <rect x="50" y="260" width="1200" height="160" rx="5" class="security-box" opacity="0.1"/>
+  <text x="650" y="280" text-anchor="middle" class="subtitle">PHASE 2: SECURITY HANDSHAKE &amp; AUTHENTICATION</text>
+  
+  <!-- Step 5: Key Exchange -->
+  <line x1="200" y1="300" x2="1100" y2="300" class="arrow"/>
+  <text x="650" y="295" text-anchor="middle" class="step-text">3. Server sends Diffie-Hellman public key</text>
+  
+  <line x1="1100" y1="320" x2="200" y2="320" class="response-arrow"/>
+  <text x="650" y="315" text-anchor="middle" class="step-text">4. Client responds with public key</text>
+  
+  <!-- Step 6: Session Key -->
+  <rect x="400" y="340" width="400" height="30" rx="3" class="message-box"/>
+  <text x="600" y="360" text-anchor="middle" class="step-text">5. Both parties compute shared AES-256 session key</text>
+  
+  <!-- Step 7: Client Registration -->
+  <line x1="1100" y1="380" x2="200" y2="380" class="response-arrow"/>
+  <text x="650" y="375" text-anchor="middle" class="step-text">6. Client sends encrypted registration (ID, system info, fingerprint)</text>
+  
+  <line x1="200" y1="400" x2="1100" y2="400" class="arrow"/>
+  <text x="650" y="395" text-anchor="middle" class="step-text">7. Server acknowledges registration &amp; assigns session</text>
+  
+  <!-- Phase 3: Operational Commands -->
+  <rect x="50" y="440" width="1200" height="300" rx="5" class="operation-box" opacity="0.1"/>
+  <text x="650" y="460" text-anchor="middle" class="subtitle">PHASE 3: OPERATIONAL COMMANDS &amp; DATA EXCHANGE</text>
+  
+  <!-- Command Categories -->
+  <rect x="80" y="480" width="250" height="240" rx="5" class="message-box"/>
+  <text x="205" y="500" text-anchor="middle" class="text">SYSTEM CONTROL</text>
+  <text x="90" y="520" class="small-text">• execute_command [cmd]</text>
+  <text x="90" y="535" class="small-text">• get_system_info</text>
+  <text x="90" y="550" class="small-text">• list_processes</text>
+  <text x="90" y="565" class="small-text">• kill_process [pid]</text>
+  <text x="90" y="580" class="small-text">• registry_read [key]</text>
+  <text x="90" y="595" class="small-text">• registry_write [key] [value]</text>
+  <text x="90" y="610" class="small-text">• service_control [action]</text>
+  <text x="90" y="625" class="small-text">• shutdown_system</text>
+  <text x="90" y="640" class="small-text">• restart_system</text>
+  
+  <rect x="350" y="480" width="250" height="240" rx="5" class="message-box"/>
+  <text x="475" y="500" text-anchor="middle" class="text">FILE OPERATIONS</text>
+  <text x="360" y="520" class="small-text">• list_files [path]</text>
+  <text x="360" y="535" class="small-text">• download_file [remote] [local]</text>
+  <text x="360" y="550" class="small-text">• upload_file [local] [remote]</text>
+  <text x="360" y="565" class="small-text">• delete_file [path]</text>
+  <text x="360" y="580" class="small-text">• create_directory [path]</text>
+  <text x="360" y="595" class="small-text">• move_file [src] [dst]</text>
+  <text x="360" y="610" class="small-text">• copy_file [src] [dst]</text>
+  <text x="360" y="625" class="small-text">• get_file_info [path]</text>
+  <text x="360" y="640" class="small-text">• search_files [pattern]</text>
+  
+  <rect x="620" y="480" width="250" height="240" rx="5" class="message-box"/>
+  <text x="745" y="500" text-anchor="middle" class="text">MONITORING</text>
+  <text x="630" y="520" class="small-text">• start_screen_stream [res] [fps]</text>
+  <text x="630" y="535" class="small-text">• stop_screen_stream</text>
+  <text x="630" y="550" class="small-text">• capture_screenshot</text>
+  <text x="630" y="565" class="small-text">• start_keylogger</text>
+  <text x="630" y="580" class="small-text">• stop_keylogger</text>
+  <text x="630" y="595" class="small-text">• get_keylog_data</text>
+  <text x="630" y="610" class="small-text">• start_audio_capture</text>
+  <text x="630" y="625" class="small-text">• start_webcam_capture</text>
+  <text x="630" y="640" class="small-text">• monitor_clipboard</text>
+  
+  <rect x="890" y="480" width="250" height="240" rx="5" class="message-box"/>
+  <text x="1015" y="500" text-anchor="middle" class="text">REMOTE CONTROL</text>
+  <text x="900" y="520" class="small-text">• send_keyboard_input [keys]</text>
+  <text x="900" y="535" class="small-text">• send_mouse_input [x,y,action]</text>
+  <text x="900" y="550" class="small-text">• inject_mouse_click [x,y]</text>
+  <text x="900" y="565" class="small-text">• inject_key_sequence [seq]</text>
+  <text x="900" y="580" class="small-text">• simulate_scroll [direction]</text>
+  <text x="900" y="595" class="small-text">• lock_workstation</text>
+  <text x="900" y="610" class="small-text">• unlock_workstation</text>
+  <text x="900" y="625" class="small-text">• switch_desktop</text>
+  <text x="900" y="640" class="small-text">• minimize_all_windows</text>
+  
+  <!-- Command Flow Examples -->
+  <rect x="50" y="760" width="1200" height="120" rx="5" class="operation-box" opacity="0.1"/>
+  <text x="650" y="780" text-anchor="middle" class="subtitle">EXAMPLE COMMAND FLOW</text>
+  
+  <!-- Example command -->
+  <line x1="200" y1="800" x2="1100" y2="800" class="arrow"/>
+  <text x="650" y="795" text-anchor="middle" class="step-text">Command: execute_command "dir C:\\" (encrypted with AES-256 + HMAC)</text>
+  
+  <rect x="1050" y="810" width="300" height="30" rx="3" class="message-box"/>
+  <text x="1060" y="830" class="step-text">Client executes command via CreateProcess API</text>
+  
+  <line x1="1100" y1="850" x2="200" y2="850" class="response-arrow"/>
+  <text x="650" y="845" text-anchor="middle" class="step-text">Response: Command output + execution status (encrypted)</text>
+  
+  <!-- Phase 4: Persistence & Monitoring -->
+  <rect x="50" y="890" width="1200" height="50" rx="5" class="security-box" opacity="0.1"/>
+  <text x="650" y="910" text-anchor="middle" class="subtitle">PHASE 4: CONTINUOUS MONITORING &amp; PERSISTENCE</text>
+  
+  <!-- Heartbeat -->
+  <line x1="1100" y1="930" x2="200" y2="930" class="response-arrow" stroke-dasharray="5,5"/>
+  <text x="650" y="925" text-anchor="middle" class="step-text">Periodic heartbeat signals &amp; activity confirmations</text>
+  
+  <!-- Legend -->
+  <rect x="50" y="970" width="600" height="20" rx="3" class="message-box"/>
+  <text x="60" y="985" class="small-text">Legend: Solid arrows = Commands/Requests | Dashed arrows = Periodic/Background | Orange arrows = Responses</text>
+</svg>

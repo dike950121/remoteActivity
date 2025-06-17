@@ -538,6 +538,73 @@ Based on the functionalities outlined in this README, here are some possible com
 *   `remove_client_bot [client_id]`: Sends a command to the client to remove itself from the system.
 *   `stop_client_process [client_id] [process_id]`: Sends a command to the client to stop a specific running process.
 
+## Project Flowcharts and Architecture Diagrams
+
+This section contains detailed flowcharts and architecture diagrams that illustrate the complete project structure, communication flows, development phases, and operational mechanisms.
+
+### 📊 Available Diagrams
+
+#### 1. Project Architecture Overview
+**File**: `diagrams/project_architecture.svg`
+
+This comprehensive diagram shows the complete project architecture including:
+- **Server Side (WPF .NET)**: Command & Control interface, User Interface components, Data Handler, and Command Issuer
+- **Client Side (C++)**: Payload Executor, Communication modules, Remote Access capabilities, and Stealth & Persistence mechanisms
+- **Network Communication**: Encrypted channels, protocol stack, connection management, and DDNS support
+- **Target Capabilities**: System control, data access, monitoring, network propagation, and scalability features
+- **Compilation Information**: Build requirements for both Client (MinGW g++/gcc) and Server (WPF .NET with Visual Studio 2022)
+
+#### 2. Communication Flow Diagram
+**File**: `diagrams/communication_flow.svg`
+
+Detailed flowchart of client-server communication including:
+- **Initialization & Connection**: Initial payload execution and C2 server connection establishment
+- **Security Handshake & Authentication**: Encrypted communication setup and mutual authentication
+- **Operational Commands & Data Exchange**: Complete command categories (System Control, File Operations, Monitoring, Remote Control)
+- **Continuous Monitoring & Persistence**: Heartbeat mechanisms and persistent connection management
+
+#### 3. Development Phases Timeline
+**File**: `diagrams/development_phases.svg`
+
+Comprehensive development roadmap showing:
+- **5 Development Phases** with estimated timelines and stage breakdowns
+- **Critical Dependencies** and parallel development opportunities
+- **Risk Factors** and mitigation strategies for each phase
+- **Stage-by-stage breakdown** from Foundation & Infrastructure through Network Propagation & Scaling
+
+#### 4. Stealth & Persistence Mechanisms
+**File**: `diagrams/stealth_persistence.svg`
+
+Detailed flowchart of client payload stealth and persistence including:
+- **Initial Execution**: Environment detection and anti-analysis measures
+- **Code Obfuscation**: Runtime protection and memory encryption
+- **Process Injection**: Various injection techniques and memory protection
+- **Persistence Methods**: Registry, scheduled tasks, services, file system hiding, kernel-level storage
+- **Protection Mechanisms**: Process, file, registry, network, and self-defense systems
+- **Continuous Monitoring**: Threat detection and response mechanisms
+
+#### 5. Network Propagation & Lateral Movement
+**File**: `diagrams/network_propagation.svg`
+
+Comprehensive network propagation flowchart including:
+- **Phase 1 - Network Reconnaissance**: Network scanning, service discovery, domain discovery, user enumeration
+- **Phase 2 - Credential Harvesting**: Local credentials, browser data, application secrets, Kerberos tickets
+- **Phase 3 - Lateral Movement**: SMB exploitation, RDP compromise, WMI execution, service exploitation
+- **Phase 4 - Active Directory Targeting**: AD enumeration, Kerberos attacks, DCSync, GPO manipulation
+
+### 🔍 How to View the Diagrams
+
+1. **Direct File Access**: Navigate to the `diagrams/` folder and open any `.svg` file in a web browser or SVG viewer
+2. **IDE Integration**: Most modern IDEs (including VS Code, Visual Studio) can display SVG files directly
+3. **Web Browser**: Simply drag and drop any `.svg` file into a web browser for full interactive viewing
+
+### 📋 Diagram Usage Guidelines
+
+- **Architecture Planning**: Use the architecture diagram for understanding component relationships
+- **Development Reference**: Refer to the development phases diagram for project timeline and dependencies
+- **Implementation Guide**: Use communication flow and stealth mechanism diagrams during implementation
+- **Security Analysis**: Leverage the network propagation diagram for understanding attack vectors and defensive measures
+
 ## Development Recommendations:
 
 From a developer's perspective, here are key recommendations to enhance clarity, guide decisions, and improve exception handling:
