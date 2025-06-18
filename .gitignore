@@ -1,7 +1,83 @@
-# Ignore built files
+# Visual Studio files
+.vs/
 bin/
 obj/
+.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUNIT
+*.VisualState.xml
+TestResult.xml
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# C++ build outputs
+*.o
+*.obj
 *.exe
 *.dll
-*.pdb
-*.obj
+*.so
+*.dylib
+
+# Build directories for C++ client
+RemoteAccessClient/build/
+
+# Temporary files
+*.tmp
+*.swp
+*~
+
+# Log files
+*.log
+
+# Visual Studio IntelliSense
+*.sln.ide-shm
+*.sln.ide-wal
+.vs/
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Visual Studio cache files
+*.[Cc]ache
+!*.[Cc]ache/
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Others
+*.bak
+*.orig

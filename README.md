@@ -4,10 +4,13 @@ This project involves the development of a sophisticated remote access payload s
 
 ## Table of Contents
 
+- [Project Overview](#project-overview)
 - [Key Features](#key-features)
+- [System Requirements](#system-requirements)
 - [Project Structure and Responsibilities](#project-structure-and-responsibilities)
   - [Server Project (WPF .NET)](#server-project-wpf-net)
   - [Client Project (C++)](#client-project-c)
+- [Installation and Setup](#installation-and-setup)
 - [Compilation](#compilation)
 - [Technical Requirements](#technical-requirements)
 - [Development Guidelines](#development-guidelines)
@@ -17,6 +20,25 @@ This project involves the development of a sophisticated remote access payload s
 - [Development Stages Breakdown](#development-stages-breakdown)
   - [Phase 1: Foundation & Infrastructure (Stages 1-12)](#phase-1-foundation--infrastructure-stages-1-12)
   - [Phase 2: Core Remote Access Features (Stages 13-25)](#phase-2-core-remote-access-features-stages-13-25)
+  - [Phase 3: Advanced Stealth & Persistence (Stages 26-35)](#phase-3-advanced-stealth--persistence-stages-26-35)
+  - [Phase 4: Advanced Features & Monitoring (Stages 36-45)](#phase-4-advanced-features--monitoring-stages-36-45)
+  - [Phase 5: Network Propagation & Scaling (Stages 46-52)](#phase-5-network-propagation--scaling-stages-46-52)
+- [Server-Side UI Design](#server-side-ui-design)
+- [Server-Side Commands](#server-side-commands)
+- [Project Flowcharts and Architecture](#project-flowcharts-and-architecture)
+- [Development Recommendations](#development-recommendations)
+- [Future Enhancements and Roadmap](#future-enhancements-and-roadmap)
+- [Contributing](#contributing)
+- [Security Considerations](#security-considerations)
+- [License](#license)
+- [Contact](#contact)
+
+## Project Overview
+
+This project is designed for educational and research purposes in cybersecurity. It demonstrates advanced techniques in remote access, system control, and network security. The project consists of two main components:
+
+1. **Server (WPF .NET)**: A sophisticated command and control interface
+2. **Client (C++)**: A stealthy payload for Windows systems
 
 ## Key Features:
 
@@ -44,13 +66,13 @@ This project is composed of two distinct components: the Server and the Client, 
 ```
 // Directory tree (3 levels, limited to 200 entries)
 ├── .gitignore
-├── RemoteAccessClient\
+├── Client\
 │       ├── build.bat
 │       ├── include\
 │       └── src\
 ├── Project detail.txt
 ├── README.md
-└── RemoteAccessServer\
+└── Server\
         ├── App.xaml
         ├── App.xaml.cs
         ├── Core\
@@ -59,7 +81,7 @@ This project is composed of two distinct components: the Server and the Client, 
         ├── Models\
         ├── Views\
         ├── Controllers\
-        └── RemoteAccessServer.csproj
+        └── Server.csproj
 ```
 
 ### Server Project (WPF .NET)
@@ -80,6 +102,36 @@ The client component will be developed using **C++** and compiled with the **Min
 -   **Remote Access Features**: Executing commands, transferring files, capturing screen data, providing remote control functionality, and recording user actions as instructed by the server.
 -   **Stealth and Persistence**: Implementing mechanisms for anti-detection, persistence (e.g., user login process, kernel storage), and anti-reverse engineering.
 -   **Network Propagation**: Facilitating lateral movement and Active Directory targeting.
+
+## System Requirements
+
+### Server Requirements
+- Windows 10/11 or Windows Server 2016+
+- .NET Framework 4.8 or later
+- Visual Studio 2022
+- Minimum 4GB RAM
+- 1GB free disk space
+
+### Client Requirements
+- Windows 7 SP1 or later
+- x86/x64 architecture
+- MinGW g++/gcc compiler
+- Minimum 512MB RAM
+- 100MB free disk space
+
+## Installation and Setup
+
+### Server Setup
+1. Clone the repository
+2. Open the solution in Visual Studio 2022
+3. Restore NuGet packages
+4. Build the solution
+5. Configure server settings in `app.config`
+
+### Client Setup
+1. Navigate to the Client directory
+2. Run `build.bat` to compile the client
+3. Configure client settings in `config.h`
 
 ## Compilation:
 
@@ -680,3 +732,38 @@ Building upon the comprehensive development stages outlined, the project has a c
 -   **Continuous Research & Development**: Maintain an active research and development pipeline to stay ahead of cybersecurity trends and threats.
 
 This forward-looking roadmap ensures the project remains at the forefront of remote access payload technology, continuously adapting to new challenges and opportunities in the cybersecurity landscape.
+
+## Contributing
+
+We welcome contributions to this project. Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+### Contribution Guidelines
+- Follow the existing code style
+- Add appropriate comments and documentation
+- Include unit tests for new features
+- Update documentation as needed
+
+## Security Considerations
+
+This project is intended for educational and research purposes only. Users are responsible for:
+
+1. Using the software ethically and legally
+2. Obtaining proper authorization before testing
+3. Following responsible disclosure practices
+4. Protecting sensitive information
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For questions and support:
+- Email: [Your Email]
+- GitHub Issues: [Project Issues Page]
+- Documentation: [Project Wiki]
