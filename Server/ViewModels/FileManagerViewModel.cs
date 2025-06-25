@@ -5,8 +5,10 @@ namespace Server.ViewModels
     /// <summary>
     /// ViewModel for FileManagerView (UI placeholder, no logic).
     /// </summary>
+    #pragma warning disable CS0067
     public class FileManagerViewModel : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
+    #pragma warning restore CS0067
 } 
