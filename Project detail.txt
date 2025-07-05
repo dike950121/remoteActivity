@@ -1,25 +1,18 @@
-I'm working on a cybersecurity graduation project, which involves creating a payload for remote access. The task includes developing a Windows-targeted payload with specific remote access features such as file transfer, command execution, and screen sharing.
+I am working on a cyber security graduation project that generates a payload for remote access. It involves developing a Windows-based payload with specific remote access features such as file transfer, command execution, and screen sharing.
 
-The ideal freelancer for this project should have:
-- Extensive knowledge and experience in cybersecurity
-- Proficiency in C# and C++
-- Skills in developing Windows-targeted software
-- Understanding of remote access capabilities
-
-Please contact me privately for more details.
-
-
-1.It should be silent, only running when a command to open a session or another command is given.
-2.It should not require loading libraries such as .NET or others when executed.
-3.It should not display anything on the screen, such as CMD or running as administrator.
-4.It should not appear in startup or merge with any unexpected program.
-5.It should send a signal to confirm that the person is actively working on the device.
-6.It should run in startup through the user login process.
-7.It should bypass all security protections (like VirusTotal).
-8.It should be encrypted, for example (base64, hex), so that the source code cannot be broken or viewed (anti-reverse engineering).
-9.It should operate from a network perspective, making the malware spread through lateral movement or targeting the Active Directory.
-10.It should hide itself when clicked.
-11.It should be capable of controlling more than one device, for example, 100,000 devices.
-12.It cannot be deleted from the device, even through Task Manager.
-13.It stores itself in the kernel.
-14.Do not run as administrator
+1. The project should consist of two major parts: a CLIENT-side SPY BOT written in C++ and a SERVER-side project written in WPF .NET that can manage multiple SPY BOTs.
+2. When running, SPY BOT should not need to load other libraries.
+3. Do not run SPY BOT with administrator privileges.
+4. SPY BOT should search SERVER at regular intervals using DDNS and search repeatedly even if search fails. If connected to SERVER and then disconnected from server, search should be performed again.
+5. SPY BOTs that have already been infiltrated should be able to check the update status of SPY BOT when connecting to server and automatically download and update themselves from server if necessary.
+6. SPY BOT should be able to execute commands sent by the server on the device.
+7. SPY BOT should track all events occurring on the device (e.g. keyboard events, file transfers, copy and paste, executable files, URLs and COOKIES accessed via browsers, etc.) and store them in a file on the device by date and time, and provide them upon request from the server.
+8. It should operate from a network perspective, allowing malware to spread laterally or target Active Directory.
+9. It should send a signal confirming that the user is using the device.
+10. The server should be able to control the screen and files of the device on which SPY BOT is running.
+11. It should be able to control two or more devices (e.g. 100,000 devices).
+12. It should bypass all security protections (e.g. VirusTotal).
+13. It should hide itself when clicked. 3. Nothing should be displayed on the screen, such as CMD or running with administrator rights.
+14. It cannot be deleted from the device even through the task manager. However, it should be deleted only by the command from the server side.
+15. The source code should be encrypted (base64, hex, etc.) so that it cannot be deciphered or viewed (to prevent reverse engineering).
+16. It is stored in the kernel.
