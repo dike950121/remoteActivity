@@ -1,24 +1,25 @@
 @echo off
 echo ========================================
-echo  Building Remote Activity Spy Bot
+echo  Building Remote Activity Spy Bot with MinGW
 echo ========================================
 echo.
 
 REM Check if g++ is available
 g++ --version >nul 2>&1
 if %ERRORLEVEL% neq 0 (
-    echo ERROR: g++ (MinGW) is not installed or not in PATH
-    echo Please install MinGW-w64 from https://www.mingw-w64.org/downloads/
+    echo ERROR: g++ is not installed or not in PATH
+    echo Please install MinGW-w64 and add it to your PATH.
     pause
     exit /b 1
 )
 
-if not exist "bin" mkdir bin
+REM Create build directory
+if not exist "build" mkdir build
 
-echo Building project with MinGW...
-mingw32-make
+echo Compiling project with g++...
+g++ -std=c++17 -Iinclude -o build/SpyBot.exe src/main.cpp src/NetworkClient.cpp src/SystemInfo.cpp src/DataCollector.cpp src/ConfigManager.cpp -lws2_32 -lwsock32 -liphlpapi -lpsapi -static-libgcc -static-libstdc++ -lwinmm
 if %ERRORLEVEL% neq 0 (
-    echo ERROR: Build failed
+    echo ERROR: Compilation failed
     pause
     exit /b 1
 )
@@ -26,15 +27,15 @@ if %ERRORLEVEL% neq 0 (
 echo.
 echo ========================================
 echo  Build completed successfully!
-echo  Executable: bin\SpyBot.exe
-echo  Config file: bin\config.json
+echo  Executable: build\SpyBot.exe
 echo ========================================
 echo.
 
-if not exist "bin\config.json" (
+REM Copy config file if it doesn't exist in build directory
+if not exist "build\config.json" (
     if exist "config.json" (
-        copy "config.json" "bin\" >nul
-        echo Config file copied to bin directory.
+        copy "config.json" "build\" >nul
+        echo Config file copied to build directory.
     )
 )
 
