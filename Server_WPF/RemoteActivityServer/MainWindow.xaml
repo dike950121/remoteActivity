@@ -3,21 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RemoteActivityServer"
+        xmlns:viewModels="clr-namespace:RemoteActivityServer.ViewModels"
+        xmlns:converters="clr-namespace:RemoteActivityServer.Converters"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Remote Activity Server" Height="800" Width="1200"
+        Title="Remote Activity Server" Height="720" Width="1280"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        TextElement.FontWeight="Regular"
-        TextElement.FontSize="13"
-        TextOptions.TextFormattingMode="Ideal"
-        TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{DynamicResource MaterialDesignFont}"
-        WindowStartupLocation="CenterScreen"
-        Icon="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml">
-    
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        FontFamily="{materialDesign:MaterialDesignFont}">
+
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:JsonConverter x:Key="JsonConverter"/>
     </Window.Resources>
     
     <Grid>
@@ -250,77 +251,63 @@
                                       Foreground="{DynamicResource MaterialDesignDarkForeground}"/>
                         </materialDesign:ColorZone>
                         
-                        <ScrollViewer Grid.Row="1" Padding="16">
-                            <StackPanel DataContext="{Binding SelectedClient}">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding}" Value="">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Converter={x:Null}}" Value="False">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <Grid>
+                                <!-- Client details panel -->
+                                <StackPanel Visibility="{Binding SelectedClient, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <TextBlock Text="Client Information" Style="{StaticResource MaterialDesignSubtitle2TextBlock}" Margin="0,0,0,8"/>
+                                    
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Client ID:" Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding SelectedClient.ClientId}" Style="{StaticResource MaterialDesignBody2TextBlock}"/>
+                                    </Grid>
+                                    
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="IP Address:" Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding SelectedClient.IpAddress}" Style="{StaticResource MaterialDesignBody2TextBlock}"/>
+                                    </Grid>
+                                    
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Connected:" Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding SelectedClient.ConnectedAt, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" 
+                                                  Style="{StaticResource MaterialDesignBody2TextBlock}"/>
+                                    </Grid>
+                                    
+                                    <Grid Margin="0,0,0,16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Last Data:" Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding SelectedClient.LastDataReceived, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" 
+                                                  Style="{StaticResource MaterialDesignBody2TextBlock}"/>
+                                    </Grid>
+                                    
+                                    <TextBlock Text="Latest System Data" Style="{StaticResource MaterialDesignSubtitle2TextBlock}" Margin="0,0,0,8"/>
+                                    <TextBox Text="{Binding SelectedClient.LatestData, Converter={StaticResource JsonConverter}, Mode=OneWay}"
+                                            IsReadOnly="True" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                            TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="200"
+                                            FontFamily="Consolas" FontSize="11"/>
+                                </StackPanel>
                                 
-                                <TextBlock Text="Client Information" Style="{StaticResource MaterialDesignSubtitle2TextBlock}" Margin="0,0,0,8"/>
-                                
-                                <Grid Margin="0,0,0,8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Client ID:" Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding ClientId}" Style="{StaticResource MaterialDesignBody2TextBlock}"/>
-                                </Grid>
-                                
-                                <Grid Margin="0,0,0,8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="IP Address:" Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding IpAddress}" Style="{StaticResource MaterialDesignBody2TextBlock}"/>
-                                </Grid>
-                                
-                                <Grid Margin="0,0,0,8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Connected:" Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding ConnectedAt, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" 
-                                              Style="{StaticResource MaterialDesignBody2TextBlock}"/>
-                                </Grid>
-                                
-                                <Grid Margin="0,0,0,16">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Last Data:" Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding LastDataReceived, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" 
-                                              Style="{StaticResource MaterialDesignBody2TextBlock}"/>
-                                </Grid>
-                                
-                                <TextBlock Text="Latest System Data" Style="{StaticResource MaterialDesignSubtitle2TextBlock}" Margin="0,0,0,8"/>
-                                <TextBox Text="{Binding LatestData, Converter={StaticResource JsonConverter}, Mode=OneWay}"
-                                        IsReadOnly="True" Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                        TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="200"
-                                        FontFamily="Consolas" FontSize="11"/>
-                            </StackPanel>
-                            
-                            <!-- Empty state when no client selected -->
-                            <TextBlock Text="Select a client to view details" 
-                                      Style="{StaticResource MaterialDesignCaptionTextBlock}"
-                                      HorizontalAlignment="Center" VerticalAlignment="Center"
-                                      Visibility="{Binding SelectedClient, Converter={StaticResource InvertedBooleanToVisibilityConverter}}"/>
+                                <!-- Empty state when no client selected -->
+                                <TextBlock Text="Select a client to view details" 
+                                          Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          Visibility="{Binding SelectedClient, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}"/>
+                            </Grid>
                         </ScrollViewer>
                     </Grid>
                 </materialDesign:Card>

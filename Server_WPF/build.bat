@@ -16,7 +16,7 @@ if %ERRORLEVEL% neq 0 (
 cd RemoteActivityServer
 
 echo Restoring NuGet packages...
-dotnet restore
+dotnet restore --source "https://api.nuget.org/v3/index.json" --property:Http_Proxy=http://upjwcjet:96l8gn49xuw6@31.58.19.50:6322
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Package restore failed
     pause

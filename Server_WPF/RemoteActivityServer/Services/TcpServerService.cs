@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Windows;
 using Newtonsoft.Json;
 using RemoteActivityServer.Models;
 
@@ -57,11 +58,11 @@ namespace RemoteActivityServer.Services
         /// Start the TCP server
         /// </summary>
         /// <returns>True if server started successfully</returns>
-        public async Task<bool> StartServerAsync()
+        public Task<bool> StartServerAsync()
         {
             try
             {
-                if (_isListening) return false;
+                if (_isListening) return Task.FromResult(false);
                 
                 _tcpListener = new TcpListener(IPAddress.Any, _port);
                 _tcpListener.Start();
@@ -73,12 +74,12 @@ namespace RemoteActivityServer.Services
                 // Start accepting clients in background
                 _ = Task.Run(AcceptClientsAsync, _cancellationTokenSource.Token);
                 
-                return true;
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 StatusChanged?.Invoke(this, $"Failed to start server: {ex.Message}");
-                return false;
+                return Task.FromResult(false);
             }
         }
         

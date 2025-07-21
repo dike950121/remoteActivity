@@ -41,9 +41,9 @@ namespace RemoteActivityServer
                     }
                     
                     // Stop server asynchronously
-                    Task.Run(async () =>
+                    Task.Run(() =>
                     {
-                        await viewModel.ToggleServerCommand.ExecuteAsync(null);
+                        viewModel.ToggleServerCommand.Execute(null);
                     }).Wait(5000); // Wait up to 5 seconds for cleanup
                 }
             }
