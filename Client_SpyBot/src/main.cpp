@@ -1,14 +1,45 @@
+#include <Windows.h>
+#include <ShlObj.h>
 #include <iostream>
 #include <memory>
 #include <csignal>
 #include <thread>
 #include <chrono>
+#include <atomic>
 #include "NetworkClient.h"
 #include "DataCollector.h"
 #include "ConfigManager.h"
 
+#pragma comment(lib, "shell32.lib")
+
 // Global flag for graceful shutdown
 std::atomic<bool> g_running(true);
+
+/**
+ * @brief Checks if the process is running with administrative privileges.
+ * @return True if running as admin, false otherwise.
+ */
+bool IsRunningAsAdmin()
+{
+#ifdef _WIN32
+    BOOL fIsAdmin = FALSE;
+    PSID pAdministratorsGroup = NULL;
+    SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
+    if (AllocateAndInitializeSid(&NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &pAdministratorsGroup))
+    {
+        if (!CheckTokenMembership(NULL, pAdministratorsGroup, &fIsAdmin))
+        {
+            fIsAdmin = FALSE;
+        }
+        FreeSid(pAdministratorsGroup);
+    }
+    return fIsAdmin;
+#else
+    // On non-Windows systems, assume not running as root for this example.
+    // A more robust solution would check the effective user ID.
+    return false;
+#endif
+}
 
 /**
  * @brief Signal handler for graceful shutdown
@@ -51,6 +82,12 @@ void OnDataReceived(const std::string& data) {
  * @return Exit code
  */
 int main(int argc, char* argv[]) {
+    if (IsRunningAsAdmin())
+    {
+        std::cerr << "[ERROR] This application should not be run with administrator privileges." << std::endl;
+        return 1;
+    }
+
     ShowBanner();
     
     // Set up signal handlers for graceful shutdown
