@@ -39,4 +39,7 @@ if not exist "build\config.json" (
     )
 )
 
+echo "Running SpyBot..."
+start "" "build\SpyBot.exe"
+
 pause 

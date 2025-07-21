@@ -39,4 +39,8 @@ echo  Or publish: dotnet publish -c Release -o publish
 echo ========================================
 echo.
 
+echo "Running Server..."
+cd ..
+start "" "RemoteActivityServer/bin/Release/net8.0-windows/RemoteActivityServer.exe"
+
 pause 
