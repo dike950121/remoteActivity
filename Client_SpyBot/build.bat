@@ -17,7 +17,7 @@ REM Create build directory
 if not exist "build" mkdir build
 
 echo Compiling project with g++...
-g++ -std=c++17 -Iinclude -o build/SpyBot.exe src/main.cpp src/NetworkClient.cpp src/SystemInfo.cpp src/DataCollector.cpp src/ConfigManager.cpp -lws2_32 -lwsock32 -liphlpapi -lpsapi -static-libgcc -static-libstdc++ -lwinmm
+g++ -std=c++17 -Iinclude -D_WIN32_WINNT=0x0600 -o build/SpyBot.exe src/main.cpp src/NetworkClient.cpp src/SystemInfo.cpp src/DataCollector.cpp src/ConfigManager.cpp -lws2_32 -lwsock32 -liphlpapi -lpsapi -static-libgcc -static-libstdc++ -lwinmm
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Compilation failed
     pause

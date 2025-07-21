@@ -3,7 +3,7 @@
 #include "SystemInfo.h"
 #include "NetworkClient.h"
 #include <memory>
-#include <thread>
+#include "mingw.thread.h"
 #include <atomic>
 #include <chrono>
 

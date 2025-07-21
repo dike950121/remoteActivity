@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <thread>
+#include "mingw.thread.h"
 #include <atomic>
 #include <functional>
 

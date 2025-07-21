@@ -5,10 +5,14 @@
 #include <iomanip>
 
 #ifdef _WIN32
+    #define _WIN32_WINNT 0x0600
     #include <windows.h>
     #include <psapi.h>
     #include <iphlpapi.h>
     #include <tlhelp32.h>
+    #include <winuser.h>
+    #include <ws2tcpip.h>
+
     #pragma comment(lib, "iphlpapi.lib")
     #pragma comment(lib, "psapi.lib")
 #else
@@ -163,8 +167,7 @@ std::vector<ProcessInfo> SystemInfo::GetProcessList() {
                 
                 // Get process path
                 char processPath[MAX_PATH];
-                DWORD pathSize = sizeof(processPath);
-                if (QueryFullProcessImageNameA(hProcess, 0, processPath, &pathSize)) {
+                if (GetModuleFileNameExA(hProcess, NULL, processPath, MAX_PATH) > 0) {
                     proc.path = processPath;
                 }
                 
