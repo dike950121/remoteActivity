@@ -190,8 +190,27 @@ public partial class MainWindow : Window
                         var message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                         LogMessage($"Received from {clientAddress}: {message}");
                         
+                        // Handle different message types
+                        string response;
+                        if (message.StartsWith("SYSTEM_INFO:"))
+                        {
+                            // Extract and log system information
+                            var systemInfo = message.Substring("SYSTEM_INFO:".Length);
+                            LogMessage($"=== SYSTEM INFORMATION FROM {clientAddress} ===");
+                            LogMessage(systemInfo);
+                            LogMessage("===============================================");
+                            response = "System information received and logged";
+                        }
+                        else if (message.StartsWith("STATUS_UPDATE:"))
+                        {
+                            response = "Status update acknowledged";
+                        }
+                        else
+                        {
+                            response = $"Hello, Bot! Server received: {message}";
+                        }
+                        
                         // Send response back to client
-                        var response = $"Hello, Bot! Server received: {message}";
                         var responseBytes = Encoding.UTF8.GetBytes(response);
                         await stream.WriteAsync(responseBytes, 0, responseBytes.Length);
                         

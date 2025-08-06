@@ -1,18 +1,18 @@
-# TCP Server and Bot Client
+# Modular TCP Server and Bot Client
 
-WPF .NET server with C++ bot client for TCP communication.
+WPF .NET server with modular C++ bot client for TCP communication.
 
 ## Quick Start
 
 ```bash
 # Build everything
-test_complete.bat
+test_system_info.bat
 
 # Run server
 cd server && dotnet run
 
 # Run bot (in new terminal)
-cd bot && simple_bot.exe
+cd bot && modular_bot.exe
 ```
 
 ## Build
@@ -32,12 +32,24 @@ build.bat
 
 ## Features
 
-- **WPF Server**: Modern UI with real-time logging and persistent connections
-- **C++ Bot**: Persistent TCP client with auto-reconnect
+- **WPF Server**: Modern UI with real-time logging and system information display
+- **Modular C++ Bot**: Organized into specialized modules:
+  - **SystemInfo**: System information collection
+  - **NetworkClient**: TCP communication handling
+  - **BotController**: Main bot logic and coordination
 - **Port**: 5555 (configurable)
+- **System Information**: Bot collects and sends detailed system information
 - **Persistent Connection**: Bot maintains connection and auto-reconnects if disconnected
-- **Periodic Messages**: Bot sends messages every 10 seconds
+- **Periodic Updates**: Bot sends status updates every 30 seconds
 - **Auto-reconnect**: 5-second delay between reconnection attempts
+
+## Modular Architecture Benefits
+
+- **Maintainability**: Each module has a single responsibility
+- **Extensibility**: Easy to add new features or modules
+- **Reusability**: Modules can be used independently
+- **Debugging**: Easier to isolate and fix issues
+- **Documentation**: Clear separation of concerns
 
 ## Requirements
 

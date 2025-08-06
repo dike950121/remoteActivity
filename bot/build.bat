@@ -1,11 +1,11 @@
 @echo off
-echo Building Simple TCP Bot Client...
+echo Building Modular TCP Bot Client...
 
 where g++ >nul 2>nul
 if %errorlevel% equ 0 (
-    g++ simple_bot.cpp -o simple_bot.exe -lws2_32
+    g++ main.cpp system_info.cpp network_client.cpp bot_controller.cpp -o modular_bot.exe -lws2_32
     if %errorlevel% equ 0 (
-        echo Build successful! Created simple_bot.exe
+        echo Build successful! Created modular_bot.exe
     ) else (
         echo Build failed!
     )
@@ -14,9 +14,9 @@ if %errorlevel% equ 0 (
 
 where cl >nul 2>nul
 if %errorlevel% equ 0 (
-    cl simple_bot.cpp /EHsc /Fe:simple_bot.exe
+    cl main.cpp system_info.cpp network_client.cpp bot_controller.cpp /EHsc /Fe:modular_bot.exe
     if %errorlevel% equ 0 (
-        echo Build successful! Created simple_bot.exe
+        echo Build successful! Created modular_bot.exe
     ) else (
         echo Build failed!
     )
