@@ -18,6 +18,7 @@ public:
     ~BotController();
     
     bool initialize();
+    bool discoverAndConnect();
     void run();
     void stop();
     void setUpdateInterval(int seconds);

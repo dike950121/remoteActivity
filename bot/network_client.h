@@ -3,16 +3,22 @@
 
 #include <winsock2.h>
 #include <string>
+#include <vector>
 
 class NetworkClient {
 private:
     WSADATA wsaData;
     SOCKET sock;
+    SOCKET discoverySocket;
     struct sockaddr_in server;
     char* server_ip;
     int server_port;
     bool isRunning;
     int reconnectDelay;
+    
+    // Discovery related members
+    std::vector<std::string> discoveredServers;
+    bool discoveryMode;
 
 public:
     NetworkClient(const char* ip = "127.0.0.1", int port = 5555);
@@ -25,6 +31,20 @@ public:
     void disconnect();
     bool isConnected() const;
     void setReconnectDelay(int delay);
+    
+    // Server discovery methods
+    bool discoverServers(int timeoutSeconds = 10);
+    std::string findBestServer();
+    bool connectToDiscoveredServer();
+    void setDiscoveryMode(bool enabled);
+    std::vector<std::string> getDiscoveredServers() const;
+    
+private:
+    bool initializeDiscoverySocket();
+    void cleanupDiscoverySocket();
+    bool sendDiscoveryBroadcast();
+    bool listenForServerResponses(int timeoutSeconds);
+    std::string getLocalIP();
 };
 
 #endif // NETWORK_CLIENT_H 

@@ -19,6 +19,21 @@ bool BotController::initialize() {
     return true;
 }
 
+bool BotController::discoverAndConnect() {
+    std::cout << "Attempting to discover servers on the network..." << std::endl;
+    
+    // Try to discover servers
+    if (networkClient.discoverServers(5)) {
+        std::cout << "Servers discovered, attempting to connect..." << std::endl;
+        if (networkClient.connectToDiscoveredServer()) {
+            return true;
+        }
+    }
+    
+    std::cout << "Discovery failed, trying direct connection..." << std::endl;
+    return networkClient.connectToServer();
+}
+
 void BotController::run() {
     std::cout << "=== System Information Bot Client ===" << std::endl;
     std::cout << "Press Ctrl+C to stop" << std::endl;

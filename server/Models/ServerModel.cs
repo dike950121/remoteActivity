@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace server.Models
 {
@@ -12,9 +13,11 @@ namespace server.Models
     public class ServerModel
     {
         private TcpListener? _listener;
+        private UdpClient? _discoveryClient;
         private bool _isServerRunning = false;
         private readonly List<TcpClient> _connectedClients = new();
         private readonly List<string> _logMessages = new();
+        private CancellationTokenSource? _discoveryCancellationToken;
 
         /// <summary>
         /// Event raised when server status changes
@@ -77,6 +80,9 @@ namespace server.Models
                 _listener.Start();
                 _isServerRunning = true;
 
+                // Start discovery service
+                StartDiscoveryService(port);
+
                 // Update status and log
                 OnServerStatusChanged(true);
                 AddLogMessage($"Server started successfully on port {port}");
@@ -101,10 +107,12 @@ namespace server.Models
             try
             {
                 _isServerRunning = false;
-                
+
+                // Stop discovery service
+                StopDiscoveryService();
+
                 // Stop the listener
                 _listener?.Stop();
-                _listener = null;
 
                 // Disconnect all clients
                 foreach (var client in _connectedClients.ToArray())
@@ -270,6 +278,82 @@ namespace server.Models
         protected virtual void OnClientDisconnected(TcpClient client)
         {
             ClientDisconnected?.Invoke(this, client);
+        }
+
+        /// <summary>
+        /// Starts the UDP discovery service
+        /// </summary>
+        /// <param name="port">The port number to advertise</param>
+        private void StartDiscoveryService(int port)
+        {
+            try
+            {
+                _discoveryClient = new UdpClient();
+                _discoveryClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                _discoveryClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
+
+                _discoveryCancellationToken = new CancellationTokenSource();
+                _ = Task.Run(() => DiscoveryListenerAsync(port), _discoveryCancellationToken.Token);
+
+                AddLogMessage($"Discovery service started on port {port}");
+            }
+            catch (Exception ex)
+            {
+                AddLogMessage($"ERROR: Failed to start discovery service: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Stops the UDP discovery service
+        /// </summary>
+        private void StopDiscoveryService()
+        {
+            try
+            {
+                _discoveryCancellationToken?.Cancel();
+                _discoveryClient?.Close();
+                _discoveryClient?.Dispose();
+                _discoveryClient = null;
+                AddLogMessage("Discovery service stopped");
+            }
+            catch (Exception ex)
+            {
+                AddLogMessage($"ERROR: Failed to stop discovery service: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Listens for discovery requests and responds with server information
+        /// </summary>
+        /// <param name="port">The port number to advertise</param>
+        private async Task DiscoveryListenerAsync(int port)
+        {
+            try
+            {
+                while (!_discoveryCancellationToken?.Token.IsCancellationRequested == true)
+                {
+                    var result = await _discoveryClient!.ReceiveAsync();
+                    var message = System.Text.Encoding.ASCII.GetString(result.Buffer);
+
+                    if (message.Contains("REMOTE_ACTIVITY_DISCOVERY"))
+                    {
+                        // Send response with server information
+                        var response = "REMOTE_ACTIVITY_SERVER";
+                        var responseBytes = System.Text.Encoding.ASCII.GetBytes(response);
+                        
+                        await _discoveryClient.SendAsync(responseBytes, responseBytes.Length, result.RemoteEndPoint);
+                        
+                        AddLogMessage($"Discovery request from {result.RemoteEndPoint.Address}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!_discoveryCancellationToken?.Token.IsCancellationRequested == true)
+                {
+                    AddLogMessage($"ERROR: Discovery service error: {ex.Message}");
+                }
+            }
         }
     }
 } 
