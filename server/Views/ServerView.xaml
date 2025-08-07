@@ -1,0 +1,107 @@
+<Window x:Class="server.Views.ServerView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TCP Server - MVC Architecture" Height="600" Width="800"
+        WindowStartupLocation="CenterScreen">
+    
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Server Control Panel -->
+        <GroupBox Grid.Row="0" Header="Server Control" Margin="0,0,0,10">
+            <Grid Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" Content="Port:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                <TextBox x:Name="PortTextBox" Grid.Column="1" Text="5555" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                
+                <Button x:Name="StartStopButton" Grid.Column="2" Content="Start Server" 
+                        Width="120" Height="30" Margin="0,0,10,0"/>
+                
+                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Label Content="Status:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <Label x:Name="StatusLabel" Content="Stopped" Foreground="Red" 
+                           VerticalAlignment="Center" FontWeight="Bold"/>
+                    <Label Content="| Clients:" VerticalAlignment="Center" Margin="10,0,5,0"/>
+                    <Label x:Name="ClientsLabel" Content="0" VerticalAlignment="Center" 
+                           FontWeight="Bold"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- Log Display -->
+        <GroupBox Grid.Row="1" Header="Server Log" Margin="0,0,0,10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" 
+                              HorizontalScrollBarVisibility="Auto" MaxHeight="400">
+                    <TextBox x:Name="LogTextBox" IsReadOnly="True" 
+                             FontFamily="Consolas" FontSize="10"
+                             Background="Black" Foreground="LightGreen"
+                             TextWrapping="Wrap" AcceptsReturn="True"/>
+                </ScrollViewer>
+                
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" 
+                            Margin="0,5,0,0">
+                    <Button x:Name="ClearLogButton" Content="Clear Log" Width="80" Height="25" 
+                            Margin="0,0,5,0"/>
+                    <Button x:Name="CopyLogButton" Content="Copy Log" Width="80" Height="25"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- Information Panel -->
+        <GroupBox Grid.Row="2" Header="Information" Margin="0,0,0,10">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock TextWrapping="Wrap" Margin="5">
+                        <Run Text="This TCP server uses the MVC (Model-View-Controller) architecture:"/>
+                        <LineBreak/>
+                        <LineBreak/>
+                        <Run Text="• Model (ServerModel): Handles server logic, client connections, and data management"/>
+                        <LineBreak/>
+                        <Run Text="• View (ServerView): Displays the UI and handles user interactions"/>
+                        <LineBreak/>
+                        <Run Text="• Controller (ServerController): Coordinates between Model and View"/>
+                        <LineBreak/>
+                        <LineBreak/>
+                        <Run Text="Features:"/>
+                        <LineBreak/>
+                        <Run Text="• Start/Stop server on specified port"/>
+                        <LineBreak/>
+                        <Run Text="• Real-time client connection monitoring"/>
+                        <LineBreak/>
+                        <Run Text="• Comprehensive logging with timestamps"/>
+                        <LineBreak/>
+                        <Run Text="• Echo server functionality (responds to client messages)"/>
+                        <LineBreak/>
+                        <Run Text="• Copy log to clipboard"/>
+                        <LineBreak/>
+                        <Run Text="• Clean separation of concerns"/>
+                    </TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+        </GroupBox>
+
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="3">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusBarText" Text="Ready - MVC Architecture"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window> 
