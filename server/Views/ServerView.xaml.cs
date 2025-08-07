@@ -89,14 +89,14 @@ namespace server.Views
             {
                 if (isRunning)
                 {
-                    StatusLabel.Content = "Running";
+                    StatusLabel.Text = "Running";
                     StatusLabel.Foreground = System.Windows.Media.Brushes.Green;
                     StartStopButton.Content = "Stop Server";
                     StatusBarText.Text = "Server is running - MVC Architecture";
                 }
                 else
                 {
-                    StatusLabel.Content = "Stopped";
+                    StatusLabel.Text = "Stopped";
                     StatusLabel.Foreground = System.Windows.Media.Brushes.Red;
                     StartStopButton.Content = "Start Server";
                     StatusBarText.Text = "Server is stopped - MVC Architecture";
@@ -112,7 +112,7 @@ namespace server.Views
         {
             Dispatcher.Invoke(() =>
             {
-                ClientsLabel.Content = count.ToString();
+                ClientsLabel.Text = count.ToString();
             });
         }
 
