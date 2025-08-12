@@ -27,6 +27,8 @@ private:
     void sendSystemInfo();
     void sendStatusUpdate();
     void handleReconnection();
+    void handleServerCommands();
+    void processUpdateCommand(const std::string& command);
 };
 
 #endif // BOT_CONTROLLER_H 

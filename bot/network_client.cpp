@@ -1,4 +1,5 @@
 #include "network_client.h"
+#include "system_info.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -297,4 +298,31 @@ std::string NetworkClient::getLocalIP() {
     
     char* localIP = inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
     return std::string(localIP);
+}
+
+bool NetworkClient::handleUpdateCommand(const std::string& command) {
+    if (command.find("UPDATE:") != std::string::npos) {
+        std::string updateUrl = command.substr(7); // Skip "UPDATE:"
+        return downloadUpdate(updateUrl);
+    }
+    return false;
+}
+
+bool NetworkClient::downloadUpdate(const std::string& updateUrl) {
+    try {
+        std::cout << "Downloading update from: " << updateUrl << std::endl;
+        
+        // Use SystemInfo to handle the download
+        return SystemInfo::downloadAndUpdate(updateUrl);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error downloading update: " << e.what() << std::endl;
+        return false;
+    }
+}
+
+void NetworkClient::performSelfUpdate(const std::string& newExePath) {
+    // This method is called by SystemInfo::downloadAndUpdate
+    // The actual update process is handled there
+    std::cout << "Self-update process initiated" << std::endl;
 } 

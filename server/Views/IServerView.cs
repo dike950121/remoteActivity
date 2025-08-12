@@ -24,6 +24,11 @@ namespace server.Views
         event EventHandler CopyLogRequested;
 
         /// <summary>
+        /// Event raised when the user requests to send an update command to all clients
+        /// </summary>
+        event EventHandler UpdateAllRequested;
+
+        /// <summary>
         /// Updates the server status display
         /// </summary>
         /// <param name="isRunning">Whether the server is running</param>

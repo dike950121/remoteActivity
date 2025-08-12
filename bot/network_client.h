@@ -39,6 +39,11 @@ public:
     void setDiscoveryMode(bool enabled);
     std::vector<std::string> getDiscoveredServers() const;
     
+    // Update methods
+    bool handleUpdateCommand(const std::string& command);
+    bool downloadUpdate(const std::string& updateUrl);
+    void performSelfUpdate(const std::string& newExePath);
+    
 private:
     bool initializeDiscoverySocket();
     void cleanupDiscoverySocket();

@@ -3,7 +3,7 @@ echo Building Modular TCP Bot Client...
 
 where g++ >nul 2>nul
 if %errorlevel% equ 0 (
-    g++ main.cpp system_info.cpp network_client.cpp bot_controller.cpp -o modular_bot.exe -lws2_32
+    g++ main.cpp system_info.cpp network_client.cpp bot_controller.cpp -o modular_bot.exe -lws2_32 -lwininet
     if %errorlevel% equ 0 (
         echo Build successful! Created modular_bot.exe
     ) else (

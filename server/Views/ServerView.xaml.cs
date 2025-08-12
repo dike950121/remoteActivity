@@ -26,6 +26,11 @@ namespace server.Views
         public event EventHandler? CopyLogRequested;
 
         /// <summary>
+        /// Event raised when the user requests to update all clients
+        /// </summary>
+        public event EventHandler? UpdateAllRequested;
+
+        /// <summary>
         /// Initializes a new instance of the ServerView
         /// </summary>
         public ServerView()
@@ -36,6 +41,7 @@ namespace server.Views
             StartStopButton.Click += StartStopButton_Click;
             ClearLogButton.Click += ClearLogButton_Click;
             CopyLogButton.Click += CopyLogButton_Click;
+            UpdateAllButton.Click += UpdateAllButton_Click;
             
             // Initialize status
             UpdateServerStatus(false);
@@ -77,6 +83,16 @@ namespace server.Views
         private void CopyLogButton_Click(object sender, RoutedEventArgs e)
         {
             CopyLogRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Handles the update all button click event
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Event arguments</param>
+        private void UpdateAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateAllRequested?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -137,11 +153,11 @@ namespace server.Views
         {
             Dispatcher.Invoke(() =>
             {
-                if (!string.IsNullOrEmpty(LogTextBox.Text))
+                if (LogTextBox.Text.Length > 0)
                 {
-                    LogTextBox.Text += Environment.NewLine;
+                    LogTextBox.AppendText(Environment.NewLine);
                 }
-                LogTextBox.Text += message;
+                LogTextBox.AppendText(message);
                 LogTextBox.ScrollToEnd();
             });
         }

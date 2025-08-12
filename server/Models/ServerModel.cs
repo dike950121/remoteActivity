@@ -14,9 +14,12 @@ namespace server.Models
     {
         private TcpListener? _listener;
         private UdpClient? _discoveryClient;
-        private bool _isServerRunning = false;
+        private volatile bool _isServerRunning = false;
         private readonly List<TcpClient> _connectedClients = new();
         private readonly List<string> _logMessages = new();
+        private readonly object _clientsLock = new();
+        private readonly object _logLock = new();
+        private const int MaxLogEntries = 5000;
         private CancellationTokenSource? _discoveryCancellationToken;
 
         /// <summary>
@@ -47,17 +50,88 @@ namespace server.Models
         /// <summary>
         /// Gets the current number of connected clients
         /// </summary>
-        public int ConnectedClientsCount => _connectedClients.Count;
+        public int ConnectedClientsCount
+        {
+            get
+            {
+                lock (_clientsLock)
+                {
+                    return _connectedClients.Count;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets all log messages
         /// </summary>
-        public IReadOnlyList<string> LogMessages => _logMessages.AsReadOnly();
+        public IReadOnlyList<string> LogMessages
+        {
+            get
+            {
+                lock (_logLock)
+                {
+                    return new List<string>(_logMessages).AsReadOnly();
+                }
+            }
+        }
+
+        // Removed public exposure of the connected clients collection to limit surface area
 
         /// <summary>
-        /// Gets all connected clients
+        /// Sends an update command to all connected clients
         /// </summary>
-        public IReadOnlyList<TcpClient> ConnectedClients => _connectedClients.AsReadOnly();
+        /// <param name="updateUrl">The URL where the new version can be downloaded</param>
+        public void SendUpdateToAllClients(string updateUrl)
+        {
+            var updateCommand = $"UPDATE:{updateUrl}";
+            var updateBytes = System.Text.Encoding.ASCII.GetBytes(updateCommand);
+            
+            TcpClient[] clientsSnapshot;
+            lock (_clientsLock)
+            {
+                clientsSnapshot = _connectedClients.ToArray();
+            }
+            foreach (var client in clientsSnapshot)
+            {
+                try
+                {
+                    if (client.Connected)
+                    {
+                        client.GetStream().Write(updateBytes, 0, updateBytes.Length);
+                        AddLogMessage($"Update command sent to client {((IPEndPoint)client.Client.RemoteEndPoint!).Address}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddLogMessage($"ERROR: Failed to send update to client: {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends an update command to a specific client
+        /// </summary>
+        /// <param name="client">The client to update</param>
+        /// <param name="updateUrl">The URL where the new version can be downloaded</param>
+        public void SendUpdateToClient(TcpClient client, string updateUrl)
+        {
+            try
+            {
+                if (client.Connected)
+                {
+                    var updateCommand = $"UPDATE:{updateUrl}";
+                    var updateBytes = System.Text.Encoding.ASCII.GetBytes(updateCommand);
+                    client.GetStream().Write(updateBytes, 0, updateBytes.Length);
+                    
+                    var clientAddress = ((IPEndPoint)client.Client.RemoteEndPoint!).Address;
+                    AddLogMessage($"Update command sent to specific client {clientAddress}");
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLogMessage($"ERROR: Failed to send update to specific client: {ex.Message}");
+            }
+        }
 
         /// <summary>
         /// Starts the TCP server on the specified port
@@ -115,7 +189,12 @@ namespace server.Models
                 _listener?.Stop();
 
                 // Disconnect all clients
-                foreach (var client in _connectedClients.ToArray())
+                TcpClient[] clientsSnapshot;
+                lock (_clientsLock)
+                {
+                    clientsSnapshot = _connectedClients.ToArray();
+                }
+                foreach (var client in clientsSnapshot)
                 {
                     DisconnectClient(client);
                 }
@@ -139,7 +218,10 @@ namespace server.Models
                 try
                 {
                     var client = await _listener.AcceptTcpClientAsync();
-                    _connectedClients.Add(client);
+                    lock (_clientsLock)
+                    {
+                        _connectedClients.Add(client);
+                    }
                     OnClientConnected(client);
                     
                     AddLogMessage($"Client connected from {((IPEndPoint)client.Client.RemoteEndPoint!).Address}:{((IPEndPoint)client.Client.RemoteEndPoint!).Port}");
@@ -172,7 +254,7 @@ namespace server.Models
 
                 while (_isServerRunning && client.Connected)
                 {
-                    var bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                    var bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
                     if (bytesRead == 0) break; // Client disconnected
 
                     var message = System.Text.Encoding.UTF8.GetString(buffer, 0, bytesRead);
@@ -181,7 +263,7 @@ namespace server.Models
                     // Echo the message back to the client
                     var response = $"Server received: {message}";
                     var responseBytes = System.Text.Encoding.UTF8.GetBytes(response);
-                    await stream.WriteAsync(responseBytes, 0, responseBytes.Length);
+                    await stream.WriteAsync(responseBytes, 0, responseBytes.Length).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -200,7 +282,12 @@ namespace server.Models
         /// <param name="client">The client to disconnect</param>
         private void DisconnectClient(TcpClient client)
         {
-            if (_connectedClients.Remove(client))
+            var removed = false;
+            lock (_clientsLock)
+            {
+                removed = _connectedClients.Remove(client);
+            }
+            if (removed)
             {
                 try
                 {
@@ -223,7 +310,15 @@ namespace server.Models
         {
             var timestamp = DateTime.Now.ToString("HH:mm:ss");
             var logEntry = $"[{timestamp}] {message}";
-            _logMessages.Add(logEntry);
+            lock (_logLock)
+            {
+                _logMessages.Add(logEntry);
+                if (_logMessages.Count > MaxLogEntries)
+                {
+                    var removeCount = _logMessages.Count - MaxLogEntries;
+                    _logMessages.RemoveRange(0, removeCount);
+                }
+            }
             OnLogMessageAdded(logEntry);
         }
 
@@ -232,7 +327,10 @@ namespace server.Models
         /// </summary>
         public void ClearLogMessages()
         {
-            _logMessages.Clear();
+            lock (_logLock)
+            {
+                _logMessages.Clear();
+            }
         }
 
         /// <summary>
@@ -241,7 +339,10 @@ namespace server.Models
         /// <returns>All log messages concatenated with newlines</returns>
         public string GetLogMessagesAsString()
         {
-            return string.Join(Environment.NewLine, _logMessages);
+            lock (_logLock)
+            {
+                return string.Join(Environment.NewLine, _logMessages);
+            }
         }
 
         /// <summary>
@@ -332,7 +433,7 @@ namespace server.Models
             {
                 while (!_discoveryCancellationToken?.Token.IsCancellationRequested == true)
                 {
-                    var result = await _discoveryClient!.ReceiveAsync();
+                    var result = await _discoveryClient!.ReceiveAsync().ConfigureAwait(false);
                     var message = System.Text.Encoding.ASCII.GetString(result.Buffer);
 
                     if (message.Contains("REMOTE_ACTIVITY_DISCOVERY"))
@@ -341,7 +442,7 @@ namespace server.Models
                         var response = "REMOTE_ACTIVITY_SERVER";
                         var responseBytes = System.Text.Encoding.ASCII.GetBytes(response);
                         
-                        await _discoveryClient.SendAsync(responseBytes, responseBytes.Length, result.RemoteEndPoint);
+                        await _discoveryClient.SendAsync(responseBytes, responseBytes.Length, result.RemoteEndPoint).ConfigureAwait(false);
                         
                         AddLogMessage($"Discovery request from {result.RemoteEndPoint.Address}");
                     }

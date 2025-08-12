@@ -80,9 +80,38 @@ void BotController::sendSystemInfo() {
 
 void BotController::sendStatusUpdate() {
     char statusMsg[256];
-    sprintf(statusMsg, "STATUS_UPDATE: Bot running - Message #%d", messageCounter);
+    sprintf(statusMsg, "STATUS_UPDATE: Bot running - Message #%d | Version: %s", 
+            messageCounter, SystemInfo::getVersion().c_str());
     networkClient.sendMessage(statusMsg);
     networkClient.receiveResponse();
+}
+
+void BotController::handleServerCommands() {
+    // Check for server commands in the response
+    // This would be implemented based on server response format
+    // For now, we'll add a placeholder for update command handling
+}
+
+void BotController::processUpdateCommand(const std::string& command) {
+    if (command.find("UPDATE:") != std::string::npos) {
+        std::cout << "Received update command from server" << std::endl;
+        
+        // Extract update URL from command
+        size_t pos = command.find("UPDATE:");
+        if (pos != std::string::npos) {
+            std::string updateUrl = command.substr(pos + 7); // Skip "UPDATE:"
+            
+            std::cout << "Downloading update from: " << updateUrl << std::endl;
+            
+            // Perform the update
+            if (networkClient.downloadUpdate(updateUrl)) {
+                std::cout << "Update downloaded successfully" << std::endl;
+                // The update process will handle restarting the bot
+            } else {
+                std::cerr << "Failed to download update" << std::endl;
+            }
+        }
+    }
 }
 
 void BotController::handleReconnection() {
