@@ -74,7 +74,13 @@ void NetworkClient::receiveResponse() {
     
     if (len > 0) {
         buffer[len] = 0;
-        std::cout << "Server response: " << buffer << std::endl;
+        std::string response(buffer);
+        std::cout << "Server response: " << response << std::endl;
+
+        // Check if the server sent an update command within the response
+        // This also covers cases where the server pushed an UPDATE command
+        // outside of the normal request/response flow and it was read here.
+        handleUpdateCommand(response);
     } else if (len == 0) {
         std::cout << "Server closed connection" << std::endl;
         closesocket(sock);
